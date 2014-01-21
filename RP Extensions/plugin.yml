@@ -1,0 +1,44 @@
+name: 'RP-Extensions'
+main: 'com.jcamtech.rpextensions.MainClass'
+version: '0.0.1'
+commands:
+    stats:
+        description: Displays your stats
+        usage: /stats
+        permission: rpext.read
+        permission-message: You don't have rpext.read in your permissions!
+    gstore:
+        description: Stores your gold
+        usage: /gstore [amount]
+        permission: rpext.gstore
+        permission-message: You don't have rpext.gstore in your permissions!
+    gtake:
+        description: Takes your gold
+        useage: /gtake [amount]
+        permission: rpext.gtake
+        permission-message: You don't have rpext.gtake in your permissions!
+    quench:
+        description: Quenches Thirst
+        useage: /quench
+        permission: rpext.quench
+        permission-message: You don't have rpext.quench in your permissions!
+permissions:
+    rpext.*:
+        description: Gives access to all cstats commands
+        children:
+            rpext.read: true
+            rpext.gstore: true
+            rpext.gtake: true
+            rpext.quench: true
+    rpext.read:
+        description: Allows you to read stats
+        default: true
+    rpext.gstore:
+        description: Allows you to store gold
+        default: false
+    rpext.gtake:
+        description: Allows you to take stored gold
+        default: false
+    rpext.quench:
+        description: Allows you to quench your own thirst
+        default: false

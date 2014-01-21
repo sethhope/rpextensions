@@ -1,0 +1,10 @@
+#////////////RPEXT CONFIG//////////////#
+DebugMode: false
+UseGoldNuggetBank: true
+UseThirst: true
+UseChairs: false
+
+#SETTINGS
+
+ChairID: 53
+#//////////////END CONFIG///////////////#
