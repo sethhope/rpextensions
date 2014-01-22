@@ -31,9 +31,11 @@ public class stats implements CommandExecutor{
 				String name = PlayerData.getString("data." + player.getName() + ".name");
 				int nugs = (int) PlayerData.get("data."+player.getName()+".nuggets");
 				int thirst = (int) PlayerData.get("data."+player.getName()+".thirst");
+				int sleepiness = PlayerData.getInt("data."+player.getName()+".tiredness");
 				//TODO add stats operation
 				player.sendMessage("§4----------STATS----------");
 				player.sendMessage("§fName: §9" + name + "§f|Thirst: §9"+thirst);
+				player.sendMessage("§fSleepiness: §9"+sleepiness);
 				if(plugin.getConfig().getBoolean("UseGoldNuggetBank")==true)
 					player.sendMessage("§fMoney: §9" + nugs + "g");
 				player.sendMessage("§4-------------------------");

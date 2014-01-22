@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -65,8 +63,13 @@ public class MainClass extends JavaPlugin {
 			addVariable(PlayerDataFile, PlayerData, "data." + player.getName()+ ".name", player.getDisplayName());
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".nuggets", 0);
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".thirst", 20);
+			addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".tiredness", 20);
 			BukkitRunnable thirstloop = new ThirstLoop(this, player);
 			thirstloop.runTaskTimer(this,  1200, 1200);
+			BukkitRunnable tiredLoop = new Sleepiness(this);
+			tiredLoop.runTaskTimer(this, 2400, 2400);
+			BukkitRunnable effectLoop = new SleepEffectCheck(this);
+			effectLoop.runTaskTimerAsynchronously(this, 60, 60);
 		}
 		BukkitRunnable check = new ChairCheck(this);
 		check.runTaskTimerAsynchronously(this, 20, 50);

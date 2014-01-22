@@ -44,6 +44,7 @@ public final class ListenerFunction implements Listener
 		plugin.addVariable(PlayerDataFile, PlayerData, "data." + player.getName() + ".name", player.getDisplayName());
 		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".nuggets", 0);
 		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".thirst", 20);
+		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".tiredness", 20);
 		
 		if(plugin.getConfig().getBoolean("UseThirst")==true)
 		{
@@ -51,6 +52,7 @@ public final class ListenerFunction implements Listener
 					plugin.getLogger().info("Enabling thirst for: "+player.getName());
 				BukkitRunnable thirstloop = new ThirstLoop(plugin, player);
 				thirstloop.runTaskTimer(plugin,  1200, 1200);
+				
 		}
 	}
 	@EventHandler
