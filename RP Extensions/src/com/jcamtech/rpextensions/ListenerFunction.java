@@ -15,13 +15,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
@@ -62,13 +62,6 @@ public final class ListenerFunction implements Listener
 			PlayerData.set("data."+player.getName()+".thirst", 20);
 			plugin.saveYamls(PlayerDataFile, PlayerData);
 	}
-	
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onVehicleExit(VehicleExitEvent event)
-	{
-		if(plugin.debugMode)
-		plugin.getLogger().info("VEHICLE EXITED");
-	}
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event){
         if(event.getLeaveMessage().equalsIgnoreCase("Nope!)")||event.getReason().equalsIgnoreCase("Nope!")){
@@ -100,20 +93,22 @@ public final class ListenerFunction implements Listener
         if(plugin.isSitting.containsKey(player))
         	plugin.isSitting.remove(player);
 	}
-	@EventHandler
-	public void onDespawn(ProjectileHitEvent event)
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onSignCreate(SignChangeEvent sign)
 	{
-		for(Player player : plugin.getServer().getOnlinePlayers())
+		if(sign.getPlayer().hasPermission("rpext.createatm"))
 		{
-			if(event.getEntity() == plugin.playerMap.get(player))
+			if (sign.getLine(0).equals("[rpAtm]")) 
 			{
-				if(plugin.debugMode)
-					plugin.getLogger().info("ArrowDespawn prevetion");
-				ArrowDespawnCheck adc = new ArrowDespawnCheck(plugin, plugin.playerMap.get(player));
-				adc.runTaskTimer(plugin, 10, 80);
+		          sign.setLine(0, "§5{ATM}");
+		          sign.setLine(1, "Use /gstore");
+		          sign.setLine(2, "or /gtake");
+		          sign.setLine(3, "to use ATM");
+		          sign.getBlock().setMetadata("isAtm", new FixedMetadataValue(plugin, "true"));
 			}
 		}
 	}
+	
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerUse(PlayerInteractEvent event)
@@ -140,13 +135,15 @@ public final class ListenerFunction implements Listener
 						PlayerData.set("data."+player.getName()+".thirst", count);
 						plugin.saveYamls(PlayerDataFile, PlayerData);
 					}
-					if(b.getType().getId() == config.getInt("ChairID") && player.isInsideVehicle() == false)
+					if(b.getType().getId() == config.getInt("ChairID") && player.isInsideVehicle() == false && plugin.config.getBoolean("UseChairs"))
 					{
 						Entity chair = b.getWorld().spawnEntity(b.getLocation().add(0.5,0.5,0.5), EntityType.ARROW);
 						chair.setPassenger(player);
 						plugin.isSitting.put(player, true);
 						plugin.playerMap.put(player, chair);
 						playerLoc.put(player, player.getLocation());
+						ArrowDespawnCheck adc = new ArrowDespawnCheck(plugin, chair);
+						adc.runTaskTimer(plugin, 10, 80);
 					}
 				}
 				if(player.getItemInHand().getType() == Material.POTION)

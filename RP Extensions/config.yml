@@ -2,7 +2,8 @@
 DebugMode: false
 UseGoldNuggetBank: true
 UseThirst: true
-UseChairs: false
+#//////EXPERIMENTAL!!!/////////////////#
+UseChairs: false 
 
 #SETTINGS
 

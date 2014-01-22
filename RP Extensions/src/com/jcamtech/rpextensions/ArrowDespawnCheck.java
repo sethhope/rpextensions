@@ -17,8 +17,6 @@ public class ArrowDespawnCheck extends BukkitRunnable{
 	}
 	@Override
 	public void run() {
-		if(plugin.debugMode)
-			plugin.getLogger().info("PreventedDespawn");
 		arrow.setTicksLived(1);
 		if(!plugin.playerMap.containsValue(arrow))
 		{

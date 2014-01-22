@@ -30,6 +30,7 @@ permissions:
             rpext.gstore: true
             rpext.gtake: true
             rpext.quench: true
+            rpext.createatm: true
     rpext.read:
         description: Allows you to read stats
         default: true
@@ -41,4 +42,7 @@ permissions:
         default: false
     rpext.quench:
         description: Allows you to quench your own thirst
+        default: false
+    rpext.createatm:
+        description: Allows you to make an ATM machine
         default: false
