@@ -69,7 +69,7 @@ public class MainClass extends JavaPlugin {
 			if(config.getBoolean("UseSleep"))
 			{
 				BukkitRunnable tiredLoop = new Sleepiness(this);
-				tiredLoop.runTaskTimer(this, 2400, 2400);
+				tiredLoop.runTaskTimer(this, 9600, 9600);
 				BukkitRunnable effectLoop = new SleepEffectCheck(this);
 				effectLoop.runTaskTimerAsynchronously(this, 60, 60);
 			}

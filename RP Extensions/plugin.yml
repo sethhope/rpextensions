@@ -1,6 +1,6 @@
 name: 'RP-Extensions'
 main: 'com.jcamtech.rpextensions.MainClass'
-version: '0.0.2'
+version: '0.0.3'
 commands:
     stats:
         description: Displays your stats
@@ -22,6 +22,11 @@ commands:
         useage: /quench
         permission: rpext.quench
         permission-message: You don't have rpext.quench in your permissions!
+    sleep:
+        description: resets sleepiness
+        useage: /sleep
+        permission: rpext.sleep
+        permission-message: You don't have rpext.sleep in your permissions!
 permissions:
     rpext.*:
         description: Gives access to all cstats commands
@@ -31,6 +36,7 @@ permissions:
             rpext.gtake: true
             rpext.quench: true
             rpext.createatm: true
+            rpext.sleep
     rpext.read:
         description: Allows you to read stats
         default: true
@@ -45,4 +51,7 @@ permissions:
         default: false
     rpext.createatm:
         description: Allows you to make an ATM machine
+        default: false
+    rpext.sleep
+        description: Allows player to reset sleep variable
         default: false
