@@ -61,6 +61,16 @@ public final class ListenerFunction implements Listener
 			FileConfiguration PlayerData = plugin.getPlayerData();
 			File PlayerDataFile = plugin.getPlayerFile();
 			Player player = event.getEntity();
+			
+			if(PlayerData.getInt("data."+player.getName()+".tiredness") == 0)
+			{
+				event.setDeathMessage(player.getName()+" has fallen asleep and been eaten by monsters");
+			}
+			if(PlayerData.getInt("data."+player.getName()+".thirst") == 0)
+			{
+				event.setDeathMessage(player.getName()+" has dehydrated and died.");
+			}
+			PlayerData.set("data."+player.getName()+".tiredness", 20);
 			PlayerData.set("data."+player.getName()+".thirst", 20);
 			plugin.saveYamls(PlayerDataFile, PlayerData);
 	}
@@ -119,6 +129,26 @@ public final class ListenerFunction implements Listener
 		FileConfiguration PlayerData = plugin.getPlayerData();
 		File PlayerDataFile = plugin.getPlayerFile();
 		FileConfiguration config = plugin.getConfig();
+		List<Block> los = event.getPlayer().getLineOfSight(null, 5);
+		for(Block b : los)
+		{
+			if(b.getType().getId() == config.getInt("ChairID") && player.isInsideVehicle() == false && plugin.config.getBoolean("UseChairs"))
+			{
+				Entity chair = b.getWorld().spawnEntity(b.getLocation().add(0.5,0.5,0.5), EntityType.ARROW);
+				chair.setPassenger(player);
+				plugin.isSitting.put(player, true);
+				plugin.playerMap.put(player, chair);
+				playerLoc.put(player, player.getLocation());
+				ArrowDespawnCheck adc = new ArrowDespawnCheck(plugin, chair);
+				adc.runTaskTimer(plugin, 10, 80);
+			}
+			if(b.getType()==Material.BED || b.getType() == Material.BED_BLOCK && player.getWorld().getTime() > 12541 && player.getWorld().getTime() < 23458)
+			{
+				plugin.PlayerData.set("data."+player.getName()+".tiredness", 20);
+				plugin.saveYamls(PlayerDataFile, PlayerData);
+			}
+			
+		}
 		if(plugin.getConfig().getBoolean("UseThirst") == true)
 		{
 			if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -136,16 +166,6 @@ public final class ListenerFunction implements Listener
 						player.sendMessage("Quenched thirst!");
 						PlayerData.set("data."+player.getName()+".thirst", count);
 						plugin.saveYamls(PlayerDataFile, PlayerData);
-					}
-					if(b.getType().getId() == config.getInt("ChairID") && player.isInsideVehicle() == false && plugin.config.getBoolean("UseChairs"))
-					{
-						Entity chair = b.getWorld().spawnEntity(b.getLocation().add(0.5,0.5,0.5), EntityType.ARROW);
-						chair.setPassenger(player);
-						plugin.isSitting.put(player, true);
-						plugin.playerMap.put(player, chair);
-						playerLoc.put(player, player.getLocation());
-						ArrowDespawnCheck adc = new ArrowDespawnCheck(plugin, chair);
-						adc.runTaskTimer(plugin, 10, 80);
 					}
 				}
 				if(player.getItemInHand().getType() == Material.POTION)

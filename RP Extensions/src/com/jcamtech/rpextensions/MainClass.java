@@ -66,10 +66,13 @@ public class MainClass extends JavaPlugin {
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".tiredness", 20);
 			BukkitRunnable thirstloop = new ThirstLoop(this, player);
 			thirstloop.runTaskTimer(this,  1200, 1200);
-			BukkitRunnable tiredLoop = new Sleepiness(this);
-			tiredLoop.runTaskTimer(this, 2400, 2400);
-			BukkitRunnable effectLoop = new SleepEffectCheck(this);
-			effectLoop.runTaskTimerAsynchronously(this, 60, 60);
+			if(config.getBoolean("UseSleep"))
+			{
+				BukkitRunnable tiredLoop = new Sleepiness(this);
+				tiredLoop.runTaskTimer(this, 2400, 2400);
+				BukkitRunnable effectLoop = new SleepEffectCheck(this);
+				effectLoop.runTaskTimerAsynchronously(this, 60, 60);
+			}
 		}
 		BukkitRunnable check = new ChairCheck(this);
 		check.runTaskTimerAsynchronously(this, 20, 50);

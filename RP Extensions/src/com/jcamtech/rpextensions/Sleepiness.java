@@ -1,5 +1,6 @@
 package com.jcamtech.rpextensions;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -15,7 +16,7 @@ public class Sleepiness extends BukkitRunnable{
 		for(Player player : plugin.getServer().getOnlinePlayers())
 		{
 			int sleepiness = plugin.PlayerData.getInt("data."+player.getName()+".tiredness");
-			if(sleepiness > 0)
+			if(sleepiness > 0 && player.getGameMode() == GameMode.SURVIVAL)
 				sleepiness--;
 			
 			if(sleepiness == 5)

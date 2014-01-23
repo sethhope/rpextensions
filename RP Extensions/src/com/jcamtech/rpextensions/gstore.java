@@ -80,66 +80,35 @@ public class gstore implements CommandExecutor{
 							}
 						}
 					}
-					for(ItemStack inven : inv)
+					if(baseAmount <= amount)
 					{
-						if(inven != null)
+						InventoryUtil.removeInventoryItems(i, Material.GOLD_NUGGET, baseAmount);
+						player.sendMessage("§2Stored "+baseAmount+"g");
+						int nuggets=0;
+						if(plugin.nodeExists(PlayerData, "data."+player.getName()+".nuggets"))
 						{
-							if(inven.getType().equals(Material.GOLD_NUGGET))
+							nuggets = (int)PlayerData.get("data."+player.getName()+".nuggets");
+							PlayerData.set("data."+player.getName()+".nuggets", nuggets+baseAmount);
+							try {
+								PlayerData.save(PlayerDataFile);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						} else
+						{
+							if(baseAmount > 0)
 							{
-								int curAm=inven.getAmount();
-								if(plugin.debugMode)
-									plugin.getLogger().info("Has " +amount+" Nuggs");
-								
-								if(stacksToTake >= 1 && curAm == 64)
-								{
-									i.remove(inven);
-									stacksToTake -= 1;
-									stored += 64;
-									if(plugin.debugMode)
-										plugin.getLogger().info("Withdrawing 1 stack.");
-									
-								}else
-								{
-									if(curAm > (stacksToTake*64))
-									{
-										inven.setAmount((int) (curAm - (stacksToTake*64)));
-										stored+=stacksToTake*64;
-										if(plugin.debugMode)
-											plugin.getLogger().info("Withdrawing "+stacksToTake*64+" items.");
-										stacksToTake=0;
-									}else{
-										i.remove(inven);
-										stored+=curAm;
-										if(plugin.debugMode)
-											plugin.getLogger().info("Withdrawing "+curAm+" items.");
-										stacksToTake=0;
-									}
-								}
+								plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".nuggets", stored);
 							}
 						}
-					}
-					player.sendMessage("§2Stored "+stored+"g");
-					int nuggets=0;
-					if(plugin.nodeExists(PlayerData, "data."+player.getName()+".nuggets"))
+					}else
 					{
-						nuggets = (int)PlayerData.get("data."+player.getName()+".nuggets");
-						PlayerData.set("data."+player.getName()+".nuggets", nuggets+stored);
-						try {
-							PlayerData.save(PlayerDataFile);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					} else
-					{
-						if(amount > 0)
-						{
-							plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".nuggets", stored);
-						}
+						player.sendMessage("§cNot enough gold to store");
 					}
 				}
 				else
 				{
-					player.sendMessage("You are not at an ATM");
+					player.sendMessage("§cYou are not at an ATM");
 				}
 				
 			}
