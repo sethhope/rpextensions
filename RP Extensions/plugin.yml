@@ -36,7 +36,7 @@ permissions:
             rpext.gtake: true
             rpext.quench: true
             rpext.createatm: true
-            rpext.sleep
+            rpext.sleep: true
     rpext.read:
         description: Allows you to read stats
         default: true
@@ -52,6 +52,6 @@ permissions:
     rpext.createatm:
         description: Allows you to make an ATM machine
         default: false
-    rpext.sleep
+    rpext.sleep:
         description: Allows player to reset sleep variable
         default: false
