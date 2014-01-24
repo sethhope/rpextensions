@@ -25,6 +25,7 @@ public class gstore implements CommandExecutor{
 	{
 		this.plugin = plugin;
 	}
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
@@ -40,7 +41,6 @@ public class gstore implements CommandExecutor{
 				Player player = (Player) sender;
 				PlayerData = plugin.getPlayerData();
 				File PlayerDataFile = plugin.getPlayerFile();
-				@SuppressWarnings("deprecation")
 				List<Block> lineOfSight = player.getLineOfSight(null, 5);
 				boolean allow = false;
 				for(Block b : lineOfSight)
@@ -48,7 +48,6 @@ public class gstore implements CommandExecutor{
 					
 					if(b.getType() == Material.SIGN || b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN)
 					{
-						plugin.getLogger().info("Sign");
 						if(b.hasMetadata("isAtm"))
 						{
 							if(b.getMetadata("isAtm").get(0).asString() == "true")
@@ -74,7 +73,7 @@ public class gstore implements CommandExecutor{
 					{
 						if(inven != null)
 						{
-							if(inven.getType().equals(Material.GOLD_NUGGET))
+							if(inven.getType().equals(Material.getMaterial(plugin.getConfig().getInt("MoneyID"))))
 							{
 								amount += inven.getAmount();
 							}
@@ -82,8 +81,8 @@ public class gstore implements CommandExecutor{
 					}
 					if(baseAmount <= amount)
 					{
-						InventoryUtil.removeInventoryItems(i, Material.GOLD_NUGGET, baseAmount);
-						player.sendMessage("§2Stored "+baseAmount+"g");
+						InventoryUtil.removeInventoryItems(i, Material.getMaterial(plugin.getConfig().getInt("MoneyID")), baseAmount);
+						player.sendMessage("§2Stored "+baseAmount+plugin.getConfig().getString("MoneyUnit"));
 						int nuggets=0;
 						if(plugin.nodeExists(PlayerData, "data."+player.getName()+".nuggets"))
 						{
@@ -103,7 +102,7 @@ public class gstore implements CommandExecutor{
 						}
 					}else
 					{
-						player.sendMessage("§cNot enough gold to store");
+						player.sendMessage("§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" to store");
 					}
 				}
 				else

@@ -26,6 +26,7 @@ public class gtake implements CommandExecutor{
 	{
 		this.plugin = plugin;
 	}
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
@@ -41,7 +42,6 @@ public class gtake implements CommandExecutor{
 				Player player = (Player) sender;
 				PlayerData = plugin.getPlayerData();
 				File PlayerDataFile = plugin.getPlayerFile();
-				@SuppressWarnings("deprecation")
 				List<Block> lineOfSight = player.getLineOfSight(null, 5);
 				boolean allow = false;
 				for(Block b : lineOfSight)
@@ -49,7 +49,6 @@ public class gtake implements CommandExecutor{
 					
 					if(b.getType() == Material.SIGN || b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN)
 					{
-						plugin.getLogger().info("Sign");
 						if(b.hasMetadata("isAtm"))
 						{
 							if(b.getMetadata("isAtm").get(0).asString() == "true")
@@ -66,7 +65,7 @@ public class gtake implements CommandExecutor{
 					amount = PlayerData.getInt("data."+player.getName()+".nuggets");
 					if(quarried <= amount)
 					{
-						ItemStack inven = new ItemStack(Material.GOLD_NUGGET, quarried, (short)1);
+						ItemStack inven = new ItemStack(Material.getMaterial(plugin.getConfig().getInt("MoneyID")), quarried, (short)1);
 						final Inventory inventory = player.getInventory();
 						HashMap<Integer, ItemStack> hash = inventory.addItem(inven);
 						ItemStack itemsLeft;
@@ -74,7 +73,7 @@ public class gtake implements CommandExecutor{
 						if(itemsLeft != null)
 						{
 							quarried -= itemsLeft.getAmount();
-							player.sendMessage("§4Not enough room in inventory. Only stored "+itemsLeft.getAmount()+"g.");
+							player.sendMessage("§4Not enough room in inventory. Only stored "+itemsLeft.getAmount()+config.getString("MoneyUnit"));
 						}
 						PlayerData.set("data."+player.getName()+".nuggets", amount-quarried);
 						try {
@@ -82,10 +81,10 @@ public class gtake implements CommandExecutor{
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						player.sendMessage("§2Withdrew "+quarried+"g");
+						player.sendMessage("§2Withdrew "+quarried+plugin.getConfig().getString("MoneyUnit"));
 					} else 
 					{
-						player.sendMessage("§cNot enough gold in the bank to withdraw!");
+						player.sendMessage("§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" in the bank to withdraw!");
 					}
 					
 				}else

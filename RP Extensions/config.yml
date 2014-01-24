@@ -8,5 +8,8 @@ UseChairs: false
 
 #SETTINGS
 
+MoneyID: 371
+MoneyUnit: 'g'
+MoneyName: '§cCoin'
 ChairID: 53
 #//////////////END CONFIG///////////////#

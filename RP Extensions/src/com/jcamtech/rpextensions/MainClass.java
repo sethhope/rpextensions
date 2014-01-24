@@ -51,6 +51,8 @@ public class MainClass extends JavaPlugin {
 		getCommand("stats").setExecutor(new stats(this));
 		if(config.getBoolean("UseGoldNuggetBank") == true)
 		{
+			ItemNameCheck itemCheck = new ItemNameCheck(this);
+			itemCheck.runTaskTimerAsynchronously(this, 10, 20);
 			getCommand("gstore").setExecutor(new gstore(this));
 			getCommand("gtake").setExecutor(new gtake(this));
 		}
@@ -68,6 +70,7 @@ public class MainClass extends JavaPlugin {
 			thirstloop.runTaskTimer(this,  1200, 1200);
 			if(config.getBoolean("UseSleep"))
 			{
+				getCommand("sleep").setExecutor(new Sleep(this));
 				BukkitRunnable tiredLoop = new Sleepiness(this);
 				tiredLoop.runTaskTimer(this, 9600, 9600);
 				BukkitRunnable effectLoop = new SleepEffectCheck(this);
