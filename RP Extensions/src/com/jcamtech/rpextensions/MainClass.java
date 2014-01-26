@@ -27,9 +27,7 @@ public class MainClass extends JavaPlugin {
 	FileConfiguration PlayerData;
 	FileConfiguration config;
 	public void onEnable()//on enable
-	{
-		
-		getLogger().info("beginning");
+	{	
 		getServer().getPluginManager().registerEvents(new ListenerFunction(this), this);
 		getCommand("quench").setExecutor(new quench(this));
 		getLogger().info("loading files");//BEGIN File LOADING
@@ -47,6 +45,11 @@ public class MainClass extends JavaPlugin {
 		loadYamls(configFile, config);
 		loadYamls(PlayerDataFile, PlayerData);
 		getLogger().info("successfully loaded files");//END CONFIG LOADING
+		if(!PlayerDataFile.exists())
+		{
+			PlayerDataFile.getParentFile().mkdirs();
+			copy(getResource("PlayerData.yml"), PlayerDataFile);
+		}
 		debugMode = config.getBoolean("DebugMode");
 		getCommand("stats").setExecutor(new stats(this));
 		if(config.getBoolean("UseGoldNuggetBank") == true)
@@ -68,14 +71,19 @@ public class MainClass extends JavaPlugin {
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".tiredness", 20);
 			BukkitRunnable thirstloop = new ThirstLoop(this, player);
 			thirstloop.runTaskTimer(this,  1200, 1200);
-			if(config.getBoolean("UseSleep"))
-			{
-				getCommand("sleep").setExecutor(new Sleep(this));
-				BukkitRunnable tiredLoop = new Sleepiness(this);
-				tiredLoop.runTaskTimer(this, 9600, 9600);
-				BukkitRunnable effectLoop = new SleepEffectCheck(this);
-				effectLoop.runTaskTimerAsynchronously(this, 60, 60);
-			}
+		}
+		if(config.getBoolean("UseInterest"))
+		{
+			BukkitRunnable payday = new PayDay(this);
+			payday.runTaskTimer(this, config.getInt("InterestTime"), config.getInt("InterestTime"));
+		}
+		if(config.getBoolean("UseSleep"))
+		{
+			getCommand("sleep").setExecutor(new Sleep(this));
+			BukkitRunnable tiredLoop = new Sleepiness(this);
+			tiredLoop.runTaskTimer(this, 9600, 9600);
+			BukkitRunnable effectLoop = new SleepEffectCheck(this);
+			effectLoop.runTaskTimerAsynchronously(this, 60, 60);
 		}
 		BukkitRunnable check = new ChairCheck(this);
 		check.runTaskTimerAsynchronously(this, 20, 50);
@@ -122,11 +130,6 @@ public class MainClass extends JavaPlugin {
 		{
 			configFile.getParentFile().mkdirs();
 			copy(getResource("config.yml"), configFile);
-		}
-		if(!PlayerDataFile.exists())
-		{
-			PlayerDataFile.getParentFile().mkdirs();
-			copy(getResource("PlayerData.yml"), PlayerDataFile);
 		}
 	}
 	

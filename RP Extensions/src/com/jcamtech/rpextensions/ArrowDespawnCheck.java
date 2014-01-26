@@ -17,7 +17,7 @@ public class ArrowDespawnCheck extends BukkitRunnable{
 	}
 	@Override
 	public void run() {
-		arrow.setTicksLived(1);
+		arrow.setTicksLived(5);
 		if(!plugin.playerMap.containsValue(arrow))
 		{
 			cancel();

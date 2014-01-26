@@ -11,5 +11,13 @@ UseChairs: false
 MoneyID: 371
 MoneyUnit: 'g'
 MoneyName: '§cCoin'
+UseInterest: true
+
+#Rate that interest will multiply by
+InterestRate: 0.1
+
+#time between paydays in ticks (20 ticks = 1 second)
+InterestTime: 12000
+
 ChairID: 53
 #//////////////END CONFIG///////////////#

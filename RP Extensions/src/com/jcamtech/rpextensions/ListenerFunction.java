@@ -157,7 +157,7 @@ public final class ListenerFunction implements Listener
 				
 				for(Block b : lineOfSight)
 				{
-					if(b.getType()==Material.STATIONARY_WATER)
+					if(b.getType()==Material.STATIONARY_WATER || b.getType()==Material.WATER)
 					{
 						int count = PlayerData.getInt("data."+player.getName()+".thirst");
 						count += 15;
@@ -178,6 +178,7 @@ public final class ListenerFunction implements Listener
 							count = 20;
 						player.sendMessage("Quenched thirst!");
 						PlayerData.set("data."+player.getName()+".thirst", count);
+						player.getItemInHand().setType(Material.GLASS_BOTTLE);
 						plugin.saveYamls(PlayerDataFile, PlayerData);
 					}
 				}
