@@ -27,8 +27,9 @@ public class Sleep implements CommandExecutor{
 				sender.sendMessage("This command can only be run in game");
 			} else
 			{
+				Player player = (Player)sender;
 				sender.sendMessage("You have slept!");
-				plugin.getPlayerData().set("data."+sender.getName()+".tiredness", 20);
+				plugin.getPlayerData().set("data."+player.getUniqueId()+".tiredness", 20);
 				plugin.saveYamls(plugin.getPlayerFile(), plugin.getPlayerData());
 			}
 			

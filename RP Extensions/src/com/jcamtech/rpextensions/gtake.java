@@ -62,7 +62,7 @@ public class gtake implements CommandExecutor{
 				{
 					int quarried=Integer.parseInt(args[0]);
 					int amount=0;
-					amount = PlayerData.getInt("data."+player.getName()+".nuggets");
+					amount = PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
 					if(quarried <= amount)
 					{
 						ItemStack inven = new ItemStack(Material.getMaterial(plugin.getConfig().getInt("MoneyID")), quarried, (short)1);
@@ -75,7 +75,7 @@ public class gtake implements CommandExecutor{
 							quarried -= itemsLeft.getAmount();
 							player.sendMessage("§4Not enough room in inventory. Only stored "+itemsLeft.getAmount()+config.getString("MoneyUnit"));
 						}
-						PlayerData.set("data."+player.getName()+".nuggets", amount-quarried);
+						PlayerData.set("data."+player.getUniqueId()+".nuggets", amount-quarried);
 						try {
 							PlayerData.save(PlayerDataFile);
 						} catch (IOException e) {

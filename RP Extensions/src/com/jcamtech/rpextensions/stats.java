@@ -28,12 +28,13 @@ public class stats implements CommandExecutor{
 			} else {
 				Player player = (Player) sender;
 				PlayerData = plugin.getPlayerData();
-				String name = PlayerData.getString("data." + player.getName() + ".name");
-				int nugs = (int) PlayerData.get("data."+player.getName()+".nuggets");
-				int thirst = (int) PlayerData.get("data."+player.getName()+".thirst");
-				int sleepiness = PlayerData.getInt("data."+player.getName()+".tiredness");
+				String name = PlayerData.getString("data." + player.getUniqueId() + ".name");
+				int nugs = (int) PlayerData.get("data."+player.getUniqueId()+".nuggets");
+				int thirst = (int) PlayerData.get("data."+player.getUniqueId()+".thirst");
+				int sleepiness = PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
 				String unit = plugin.getConfig().getString("MoneyUnit");
 				player.sendMessage("§4----------STATS----------");
+				player.sendMessage("§fUUID: §9"+player.getUniqueId());
 				player.sendMessage("§fName: §9" + name + "§f|Thirst: §9"+thirst);
 				player.sendMessage("§fSleepiness: §9"+sleepiness);
 				if(plugin.getConfig().getBoolean("UseGoldNuggetBank")==true)

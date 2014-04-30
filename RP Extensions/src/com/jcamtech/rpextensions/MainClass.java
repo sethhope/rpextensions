@@ -64,13 +64,13 @@ public class MainClass extends JavaPlugin {
 		for(Player player : this.getServer().getOnlinePlayers())
 		{
 			if(debugMode)
-				getLogger().info("Player: "+player.getName());
-			addVariable(PlayerDataFile, PlayerData, "data." + player.getName()+ ".name", player.getDisplayName());
-			addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".nuggets", 0);
-			addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".thirst", 20);
-			addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".tiredness", 20);
+				getLogger().info("Player: "+player.getUniqueId());
+			addVariable(PlayerDataFile, PlayerData, "data." +player.getUniqueId()+ ".name", player.getDisplayName());
+			addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", 0);
+			addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".thirst", 20);
+			addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".tiredness", 20);
 			BukkitRunnable thirstloop = new ThirstLoop(this, player);
-			thirstloop.runTaskTimer(this,  1200, 1200);
+			thirstloop.runTaskTimer(this,  config.getInt("ThirstTime"), config.getInt("ThirstTime"));
 		}
 		if(config.getBoolean("UseInterest"))
 		{
@@ -81,7 +81,7 @@ public class MainClass extends JavaPlugin {
 		{
 			getCommand("sleep").setExecutor(new Sleep(this));
 			BukkitRunnable tiredLoop = new Sleepiness(this);
-			tiredLoop.runTaskTimer(this, 9600, 9600);
+			tiredLoop.runTaskTimer(this, config.getInt("SleepTime"), config.getInt("SleepTime"));
 			BukkitRunnable effectLoop = new SleepEffectCheck(this);
 			effectLoop.runTaskTimerAsynchronously(this, 60, 60);
 		}
@@ -113,7 +113,7 @@ public class MainClass extends JavaPlugin {
 					if(playerMap.containsKey(player))
 					{
 						if(debugMode)
-							getLogger().info("removing arrow for " +player.getName());
+							getLogger().info("removing arrow for " +player.getUniqueId());
 						playerMap.get(player).remove();
 						playerMap.remove(player);
 					}

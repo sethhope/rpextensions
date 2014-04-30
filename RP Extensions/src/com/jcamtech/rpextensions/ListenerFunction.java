@@ -40,16 +40,16 @@ public final class ListenerFunction implements Listener
 		final File PlayerDataFile = plugin.getPlayerFile();
 		Player player = evt.getPlayer();
 		if(plugin.debugMode)
-			plugin.getLogger().info("Player: "+player.getName()+" Has joined");
-		plugin.addVariable(PlayerDataFile, PlayerData, "data." + player.getName() + ".name", player.getDisplayName());
-		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".nuggets", 0);
-		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".thirst", 20);
-		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".tiredness", 20);
+			plugin.getLogger().info("Player: "+player.getUniqueId()+" Has joined");
+		plugin.addVariable(PlayerDataFile, PlayerData, "data." + player.getUniqueId() + ".name", player.getDisplayName());
+		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", 0);
+		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".thirst", 20);
+		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".tiredness", 20);
 		
 		if(plugin.getConfig().getBoolean("UseThirst")==true)
 		{
 				if(plugin.debugMode)
-					plugin.getLogger().info("Enabling thirst for: "+player.getName());
+					plugin.getLogger().info("Enabling thirst for: "+player.getUniqueId());
 				BukkitRunnable thirstloop = new ThirstLoop(plugin, player);
 				thirstloop.runTaskTimer(plugin,  1200, 1200);
 				
@@ -62,16 +62,16 @@ public final class ListenerFunction implements Listener
 			File PlayerDataFile = plugin.getPlayerFile();
 			Player player = event.getEntity();
 			
-			if(PlayerData.getInt("data."+player.getName()+".tiredness") == 0)
+			if(PlayerData.getInt("data."+player.getUniqueId()+".tiredness") == 0)
 			{
-				event.setDeathMessage(player.getName()+" has fallen asleep and been eaten by monsters");
+				event.setDeathMessage(player.getUniqueId()+" has fallen asleep and been eaten by monsters");
 			}
-			if(PlayerData.getInt("data."+player.getName()+".thirst") == 0)
+			if(PlayerData.getInt("data."+player.getUniqueId()+".thirst") == 0)
 			{
-				event.setDeathMessage(player.getName()+" has dehydrated and died.");
+				event.setDeathMessage(player.getUniqueId()+" has dehydrated and died.");
 			}
-			PlayerData.set("data."+player.getName()+".tiredness", 20);
-			PlayerData.set("data."+player.getName()+".thirst", 20);
+			PlayerData.set("data."+player.getUniqueId()+".tiredness", 20);
+			PlayerData.set("data."+player.getUniqueId()+".thirst", 20);
 			plugin.saveYamls(PlayerDataFile, PlayerData);
 	}
 	@EventHandler
@@ -159,12 +159,12 @@ public final class ListenerFunction implements Listener
 				{
 					if(b.getType()==Material.STATIONARY_WATER || b.getType()==Material.WATER)
 					{
-						int count = PlayerData.getInt("data."+player.getName()+".thirst");
+						int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
 						count += 15;
 						if(count > 20)
 							count = 20;
 						player.sendMessage("Quenched thirst!");
-						PlayerData.set("data."+player.getName()+".thirst", count);
+						PlayerData.set("data."+player.getUniqueId()+".thirst", count);
 						plugin.saveYamls(PlayerDataFile, PlayerData);
 					}
 				}
@@ -172,12 +172,12 @@ public final class ListenerFunction implements Listener
 				{
 					if(player.getItemInHand().getDurability() == 0)
 					{
-						int count = PlayerData.getInt("data."+player.getName()+".thirst");
+						int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
 						count += 15;
 						if(count > 20)
 							count = 20;
 						player.sendMessage("Quenched thirst!");
-						PlayerData.set("data."+player.getName()+".thirst", count);
+						PlayerData.set("data."+player.getUniqueId()+".thirst", count);
 						player.getItemInHand().setType(Material.GLASS_BOTTLE);
 						plugin.saveYamls(PlayerDataFile, PlayerData);
 					}

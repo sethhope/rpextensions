@@ -29,7 +29,7 @@ public class ThirstDeath extends BukkitRunnable{
 	public void run()
 	{
 		
-		if(PlayerData.getInt("data."+player.getName()+".thirst") != 0)
+		if(PlayerData.getInt("data."+player.getUniqueId()+".thirst") != 0)
 		{
 			cancel();
 		}else

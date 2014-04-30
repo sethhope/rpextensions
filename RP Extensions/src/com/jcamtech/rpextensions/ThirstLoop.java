@@ -24,7 +24,7 @@ public class ThirstLoop extends BukkitRunnable
 		this.player = player;
 		this.plugin = plugin;
 		if(plugin.debugMode==true)
-			plugin.getLogger().info("enabling thirst for: " + player.getName());
+			plugin.getLogger().info("enabling thirst for: " + player.getUniqueId());
 		PlayerDataFile = plugin.getPlayerFile();
 		PlayerData = plugin.getPlayerData();
 	}
@@ -34,11 +34,11 @@ public class ThirstLoop extends BukkitRunnable
 		if(!player.isOnline())
 		{
 			if(plugin.debugMode==true)
-				plugin.getLogger().info("Disabling thirst for: " + player.getName());
+				plugin.getLogger().info("Disabling thirst for: " + player.getUniqueId());
 			cancel();
 			return;
 		}
-		int count = PlayerData.getInt("data."+player.getName()+".thirst");
+		int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
 		if(player.getGameMode() != GameMode.CREATIVE)
 		{
 			
@@ -69,8 +69,8 @@ public class ThirstLoop extends BukkitRunnable
 				player.sendMessage("You are dehydrated!");
 			}
 			if(plugin.debugMode)
-				plugin.getLogger().info("Thirst for "+player.getName()+": "+count);
-			PlayerData.set("data."+player.getName()+".thirst", count);
+				plugin.getLogger().info("Thirst for "+player.getUniqueId()+": "+count);
+			PlayerData.set("data."+player.getUniqueId()+".thirst", count);
 			plugin.saveYamls(PlayerDataFile, PlayerData);
 		}
 	}

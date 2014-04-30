@@ -15,7 +15,7 @@ public class Sleepiness extends BukkitRunnable{
 	public void run() {
 		for(Player player : plugin.getServer().getOnlinePlayers())
 		{
-			int sleepiness = plugin.PlayerData.getInt("data."+player.getName()+".tiredness");
+			int sleepiness = plugin.PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
 			if(sleepiness > 0 && player.getGameMode() == GameMode.SURVIVAL)
 				sleepiness--;
 			
@@ -35,7 +35,7 @@ public class Sleepiness extends BukkitRunnable{
 			{
 				player.sendMessage("zzz......");
 			}
-			plugin.PlayerData.set("data."+player.getName()+".tiredness", sleepiness);
+			plugin.PlayerData.set("data."+player.getUniqueId()+".tiredness", sleepiness);
 			plugin.saveYamls(plugin.PlayerDataFile, plugin.PlayerData);
 		}
 	}

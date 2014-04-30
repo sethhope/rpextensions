@@ -84,10 +84,10 @@ public class gstore implements CommandExecutor{
 						InventoryUtil.removeInventoryItems(i, Material.getMaterial(plugin.getConfig().getInt("MoneyID")), baseAmount);
 						player.sendMessage("§2Stored "+baseAmount+plugin.getConfig().getString("MoneyUnit"));
 						int nuggets=0;
-						if(plugin.nodeExists(PlayerData, "data."+player.getName()+".nuggets"))
+						if(plugin.nodeExists(PlayerData, "data."+player.getUniqueId()+".nuggets"))
 						{
-							nuggets = (int)PlayerData.get("data."+player.getName()+".nuggets");
-							PlayerData.set("data."+player.getName()+".nuggets", nuggets+baseAmount);
+							nuggets = (int)PlayerData.get("data."+player.getUniqueId()+".nuggets");
+							PlayerData.set("data."+player.getUniqueId()+".nuggets", nuggets+baseAmount);
 							try {
 								PlayerData.save(PlayerDataFile);
 							} catch (IOException e) {
@@ -97,7 +97,7 @@ public class gstore implements CommandExecutor{
 						{
 							if(baseAmount > 0)
 							{
-								plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getName()+".nuggets", stored);
+								plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", stored);
 							}
 						}
 					}else

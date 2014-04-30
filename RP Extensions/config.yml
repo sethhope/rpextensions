@@ -2,6 +2,9 @@
 DebugMode: false
 UseGoldNuggetBank: true
 UseThirst: true
+#Time in ticks between thirst depletion 
+ThirstTime: 1200
+SleepTime: 9600
 UseSleep: true
 #//////EXPERIMENTAL!!!/////////////////#
 UseChairs: false 

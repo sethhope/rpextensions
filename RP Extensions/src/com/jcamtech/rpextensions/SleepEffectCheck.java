@@ -20,7 +20,7 @@ public class SleepEffectCheck extends BukkitRunnable{
 		{
 			if(player.getGameMode() == GameMode.SURVIVAL)
 			{
-				int sleepiness = plugin.PlayerData.getInt("data."+player.getName()+".tiredness");
+				int sleepiness = plugin.PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
 				if(sleepiness <= 5)
 				{
 					if(player.hasPotionEffect(PotionEffectType.SLOW))
