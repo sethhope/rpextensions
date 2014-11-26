@@ -9,10 +9,12 @@ import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class gstore implements CommandExecutor{
 
@@ -54,6 +56,20 @@ public class gstore implements CommandExecutor{
 							{
 								allow = true;
 							}
+						}else
+						{
+							ConfigurationSection atms = PlayerData.getConfigurationSection("atms");
+							for(String sAtms : atms.getKeys(false))
+							{
+								if(b.getX() == atms.getInt(sAtms+".x") && b.getY() == atms.getInt(sAtms+".y") && b.getZ() == atms.getInt(sAtms+".z"))
+								{
+									if(PlayerData.getBoolean("atms."+sAtms+".active")==true)
+									{
+										allow = true;
+										b.setMetadata("isAtm", new FixedMetadataValue(plugin, "true"));
+									}
+								}
+							}
 						}
 					}
 				}
@@ -62,13 +78,18 @@ public class gstore implements CommandExecutor{
 					Inventory i = player.getInventory();
 					ItemStack[] inv = i.getContents();
 					int baseAmount = Integer.parseInt(args[0]);
+					if(baseAmount < 0)
+					{
+						player.sendMessage("§cInvalid amount!");
+						return false;
+					}
 					if(plugin.debugMode)
-						plugin.getLogger().info("Withdraw "+baseAmount);
+						plugin.getLogger().info(player.getDisplayName() + " withdrew "+baseAmount);
 					int amount = 0;
 					int stored=0;
 					float stacksToTake = ((float)baseAmount/64f);
 					if(plugin.debugMode)
-						plugin.getLogger().info("Withdrawing "+stacksToTake+" stacks.");
+						plugin.getLogger().info("Withdrawing "+stacksToTake+" stacks to " + player.getDisplayName());
 					for(ItemStack inven : inv)
 					{
 						if(inven != null)

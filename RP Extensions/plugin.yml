@@ -1,15 +1,21 @@
 name: 'RP-Extensions'
 main: 'com.jcamtech.rpextensions.MainClass'
-version: '0.0.5'
+version: '0.0.7'
 commands:
     stats:
         description: Displays your stats
-        usage: /stats
+        useage: /stats
         permission: rpext.read
         permission-message: You don't have rpext.read in your permissions!
+        
+    checkstats:
+        description: Displays others stats
+        useage: /checkstats [player]
+        permission: rpext.checkstats
+        permission-message: You don't have rpext.checkstats in your permissions!
     gstore:
         description: Stores your gold
-        usage: /gstore [amount]
+        useage: /gstore [amount]
         permission: rpext.gstore
         permission-message: You don't have rpext.gstore in your permissions!
     gtake:
@@ -17,6 +23,21 @@ commands:
         useage: /gtake [amount]
         permission: rpext.gtake
         permission-message: You don't have rpext.gtake in your permissions!
+    gtransfer:
+        description: Transfers gold to another player
+        useage: /gtransfer [player] [amount]
+        permission: rpext.gtransfer
+        permission-message: You don't have rpext.gtransfer in your permissions!
+    ggive:
+        description: Transfers gold to another player
+        useage: /ggive [player] [amount]
+        permission: rpext.ggive
+        permission-message: You don't have rpext.ggive in your permissions!
+    gset:
+        description: Transfers gold to another player
+        useage: /gset [player] [amount]
+        permission: rpext.gset
+        permission-message: You don't have rpext.gset in your permissions!
     quench:
         description: Quenches Thirst
         useage: /quench
@@ -29,22 +50,37 @@ commands:
         permission-message: You don't have rpext.sleep in your permissions!
 permissions:
     rpext.*:
-        description: Gives access to all cstats commands
+        description: Gives access to all rpext commands
         children:
             rpext.read: true
+            rpext.checkstats: true
             rpext.gstore: true
             rpext.gtake: true
+            rpext.gtransfer: true
             rpext.quench: true
             rpext.createatm: true
             rpext.sleep: true
+            rpext.gset: true
     rpext.read:
         description: Allows you to read stats
         default: true
+    rpext.checkstats:
+        description: Allows you to check others stats
+        default: false
     rpext.gstore:
         description: Allows you to store gold
         default: false
     rpext.gtake:
         description: Allows you to take stored gold
+        default: false
+    rpext.gtransfer:
+        description: Allows you to transfer gold to another player
+        default: false
+    rpext.ggive:
+        description: Allows you to give gold to another player
+        default: false
+    rpext.gset:
+        description: Allows you to set the gold in another players account
         default: false
     rpext.quench:
         description: Allows you to quench your own thirst

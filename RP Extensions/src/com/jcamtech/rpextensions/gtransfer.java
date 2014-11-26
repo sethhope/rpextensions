@@ -1,10 +1,8 @@
 package com.jcamtech.rpextensions;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -13,18 +11,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-public class gtake implements CommandExecutor{
+public class gtransfer implements CommandExecutor{
 
 	FileConfiguration config;
 	FileConfiguration PlayerData;
 	
 	private MainClass plugin;
 	
-	public gtake(MainClass plugin)
+	public gtransfer(MainClass plugin)
 	{
 		this.plugin = plugin;
 	}
@@ -32,18 +28,31 @@ public class gtake implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
-		if(cmd.getName().equalsIgnoreCase("gtake"))
+		if(cmd.getName().equalsIgnoreCase("gtransfer"))
 		{
 			if(!(sender instanceof Player))
 			{
 				sender.sendMessage("This command can only be run in game");
-			} else if(args.length != 1)
+			} else if(args.length != 2)
 			{
-				sender.sendMessage("Usage: /gtake [amount]");
+				sender.sendMessage("Usage: /gtransfer [player] [amount]");
 			} else {
 				Player player = (Player) sender;
+				Player target = (Bukkit.getServer().getPlayer(args[0]));
+				int quarried = 0;
+				try{
+				quarried=Integer.parseInt(args[1]);
+				}catch(NumberFormatException e)
+				{
+					player.sendMessage("Invalid format! Use /gtransfer [player] [amount]");
+					return false;
+				}
+				if(target == null)
+				{
+					player.sendMessage("§cPlayer is not online");
+					return false;
+				}
 				PlayerData = plugin.getPlayerData();
-				File PlayerDataFile = plugin.getPlayerFile();
 				List<Block> lineOfSight = player.getLineOfSight(null, 5);
 				boolean allow = false;
 				for(Block b : lineOfSight)
@@ -76,41 +85,34 @@ public class gtake implements CommandExecutor{
 				}
 				if(allow==true)
 				{
-					int quarried=Integer.parseInt(args[0]);
 					if(quarried < 0)
 					{
-						player.sendMessage("§cInvalid amount!");
+						player.sendMessage("§cInvalid amount of money");
 						return false;
 					}
 					int amount=0;
+					int  targetAmount = 0;
+					targetAmount = PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
 					amount = PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
-					if(quarried <= amount)
+					if(amount >= quarried)
 					{
-						ItemStack inven = new ItemStack(Material.getMaterial(plugin.getConfig().getInt("MoneyID")), quarried, (short)1);
-						final Inventory inventory = player.getInventory();
-						HashMap<Integer, ItemStack> hash = inventory.addItem(inven);
-						ItemStack itemsLeft;
-						itemsLeft = hash.get(0);
-						if(itemsLeft != null)
-						{
-							quarried -= itemsLeft.getAmount();
-							player.sendMessage("§4Not enough room in inventory. Only stored "+itemsLeft.getAmount()+config.getString("MoneyUnit"));
-						}
-						PlayerData.set("data."+player.getUniqueId()+".nuggets", amount-quarried);
-						try {
-							PlayerData.save(PlayerDataFile);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						player.sendMessage("§2Withdrew "+quarried+plugin.getConfig().getString("MoneyUnit"));
-					} else 
+						amount = amount - quarried;
+						targetAmount = targetAmount + quarried;
+						PlayerData.set("data."+player.getUniqueId()+".nuggets", amount);
+						PlayerData.set("data."+target.getUniqueId()+".nuggets", targetAmount);
+						player.sendMessage("§2Transferred "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
+						target.sendMessage(player.getDisplayName()+" §2has sent you "+quarried+plugin.getConfig().getString("MoneyUnit"));
+						
+					}else
 					{
-						player.sendMessage("§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" in the bank to withdraw!");
+						player.sendMessage("§cNot enough money in your account!");
+						return false;
 					}
 					
 				}else
 				{
 					player.sendMessage("§cYou are not at an ATM");
+					return false;
 				}
 			}
 			

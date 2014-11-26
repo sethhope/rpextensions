@@ -52,38 +52,61 @@ public class MainClass extends JavaPlugin {
 		}
 		debugMode = config.getBoolean("DebugMode");
 		getCommand("stats").setExecutor(new stats(this));
+		getCommand("checkstats").setExecutor(new check(this));
 		if(config.getBoolean("UseGoldNuggetBank") == true)
 		{
 			ItemNameCheck itemCheck = new ItemNameCheck(this);
 			itemCheck.runTaskTimerAsynchronously(this, 10, 20);
 			getCommand("gstore").setExecutor(new gstore(this));
 			getCommand("gtake").setExecutor(new gtake(this));
+			getCommand("gtransfer").setExecutor(new gtransfer(this));
+			getCommand("ggive").setExecutor(new givemoney(this));
+			getCommand("gset").setExecutor(new gset(this));
 		}
 		playerMap = new HashMap<Player, Entity>();
 		isSitting = new HashMap<Player, Boolean>();
 		for(Player player : this.getServer().getOnlinePlayers())
 		{
 			if(debugMode)
-				getLogger().info("Player: "+player.getUniqueId());
+				getLogger().info("Player: "+player.getDisplayName() + " UUID:"+player.getUniqueId());
 			addVariable(PlayerDataFile, PlayerData, "data." +player.getUniqueId()+ ".name", player.getDisplayName());
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", 0);
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".thirst", 20);
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".tiredness", 20);
-			BukkitRunnable thirstloop = new ThirstLoop(this, player);
-			thirstloop.runTaskTimer(this,  config.getInt("ThirstTime"), config.getInt("ThirstTime"));
+			if(config.getBoolean("UseThirst"))
+			{	
+				if(config.getBoolean("useEssentials"))
+				{
+					BukkitRunnable thirstloop = new ThirstLoopEss(this, player);
+					thirstloop.runTaskTimer(this,  config.getInt("ThirstTime"), config.getInt("ThirstTime"));
+				}
+				else
+				{
+					BukkitRunnable thirstloop = new ThirstLoop(this, player);
+					thirstloop.runTaskTimer(this,  config.getInt("ThirstTime"), config.getInt("ThirstTime"));
+				}
+			}
+			if(config.getBoolean("UseSleep"))
+			{
+				if(config.getBoolean("useEssentials"))
+				{
+					BukkitRunnable tiredLoop = new SleepinessEss(this, player);
+					tiredLoop.runTaskTimer(this, config.getInt("SleepTime"), config.getInt("SleepTime"));
+				}
+				else
+				{
+					BukkitRunnable tiredLoop = new Sleepiness(this, player);
+					tiredLoop.runTaskTimer(this, config.getInt("SleepTime"), config.getInt("SleepTime"));
+				}
+				getCommand("sleep").setExecutor(new Sleep(this));
+				BukkitRunnable effectLoop = new SleepEffectCheck(this);
+				effectLoop.runTaskTimerAsynchronously(this, 60, 60);
+			}
 		}
 		if(config.getBoolean("UseInterest"))
 		{
 			BukkitRunnable payday = new PayDay(this);
 			payday.runTaskTimer(this, config.getInt("InterestTime"), config.getInt("InterestTime"));
-		}
-		if(config.getBoolean("UseSleep"))
-		{
-			getCommand("sleep").setExecutor(new Sleep(this));
-			BukkitRunnable tiredLoop = new Sleepiness(this);
-			tiredLoop.runTaskTimer(this, config.getInt("SleepTime"), config.getInt("SleepTime"));
-			BukkitRunnable effectLoop = new SleepEffectCheck(this);
-			effectLoop.runTaskTimerAsynchronously(this, 60, 60);
 		}
 		BukkitRunnable check = new ChairCheck(this);
 		check.runTaskTimerAsynchronously(this, 20, 50);
@@ -104,7 +127,7 @@ public class MainClass extends JavaPlugin {
 			if(isSitting.containsKey(player))
 			{
 				if(debugMode)
-					getLogger().info(player.getName()+" is supposed to be sitting!");
+					getLogger().info(player.getDisplayName()+" is supposed to be sitting!");
 				boolean isSeated = isSitting.get(player);
 				
 				if(isSeated)
@@ -113,7 +136,7 @@ public class MainClass extends JavaPlugin {
 					if(playerMap.containsKey(player))
 					{
 						if(debugMode)
-							getLogger().info("removing arrow for " +player.getUniqueId());
+							getLogger().info("removing arrow for " +player.getDisplayName());
 						playerMap.get(player).remove();
 						playerMap.remove(player);
 					}

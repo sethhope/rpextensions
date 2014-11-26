@@ -16,6 +16,8 @@ MoneyUnit: 'g'
 MoneyName: '§cCoin'
 UseInterest: true
 
+useEssentials: true
+
 #Rate that interest will multiply by
 InterestRate: 0.1
 

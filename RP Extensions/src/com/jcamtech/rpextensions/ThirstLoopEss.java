@@ -6,20 +6,22 @@ import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.UserData;
 
-public class ThirstLoop extends BukkitRunnable
+public class ThirstLoopEss extends BukkitRunnable
 {
 	private MainClass plugin;
 	public Player player;
 	private FileConfiguration PlayerData;
 	private File PlayerDataFile;
-	public ThirstLoop(MainClass plugin)
+	public ThirstLoopEss(MainClass plugin)
 	{
 		this.plugin = plugin;
 		PlayerDataFile = plugin.getPlayerFile();
 		PlayerData = plugin.getPlayerData();
 	}
-	public ThirstLoop(MainClass plugin, Player player)
+	public ThirstLoopEss(MainClass plugin, Player player)
 	{
 		this.player = player;
 		this.plugin = plugin;
@@ -38,8 +40,23 @@ public class ThirstLoop extends BukkitRunnable
 			cancel();
 			return;
 		}
+		boolean isAFK = false;
+		if(plugin.getConfigFile().getBoolean("useEssentials") == true)
+		{
+			Essentials e = (Essentials) plugin.getServer().getPluginManager().getPlugin("Essentials");
+			UserData u = e.getUser(player);
+			if(u.isAfk() == true)
+			{
+				if(plugin.debugMode)
+					plugin.getLogger().info(player.getName() +" is AFK");
+				isAFK = true;
+			}else
+			{
+				isAFK = false;
+			}
+		}
 		int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
-		if(player.getGameMode() != GameMode.CREATIVE && !player.isDead())
+		if(player.getGameMode() != GameMode.CREATIVE && isAFK == false && !player.isDead())
 		{
 			
 			if(count >= 1)

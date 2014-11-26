@@ -7,6 +7,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -15,12 +16,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -40,19 +43,40 @@ public final class ListenerFunction implements Listener
 		final File PlayerDataFile = plugin.getPlayerFile();
 		Player player = evt.getPlayer();
 		if(plugin.debugMode)
-			plugin.getLogger().info("Player: "+player.getUniqueId()+" Has joined");
+			plugin.getLogger().info("Player: "+player.getDisplayName()+" Has joined. (UUID: " + player.getUniqueId() + ")");
 		plugin.addVariable(PlayerDataFile, PlayerData, "data." + player.getUniqueId() + ".name", player.getDisplayName());
 		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", 0);
 		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".thirst", 20);
 		plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".tiredness", 20);
 		
-		if(plugin.getConfig().getBoolean("UseThirst")==true)
-		{
-				if(plugin.debugMode)
-					plugin.getLogger().info("Enabling thirst for: "+player.getUniqueId());
+		if(plugin.getConfig().getBoolean("UseThirst"))
+		{	
+			if(plugin.getConfig().getBoolean("useEssentials"))
+			{
+				BukkitRunnable thirstloop = new ThirstLoopEss(plugin, player);
+				thirstloop.runTaskTimer(plugin,  plugin.getConfig().getInt("ThirstTime"), plugin.getConfig().getInt("ThirstTime"));
+			}
+			else
+			{
 				BukkitRunnable thirstloop = new ThirstLoop(plugin, player);
-				thirstloop.runTaskTimer(plugin,  1200, 1200);
-				
+				thirstloop.runTaskTimer(plugin,  plugin.getConfig().getInt("ThirstTime"), plugin.getConfig().getInt("ThirstTime"));
+			}
+		}
+		if(plugin.getConfig().getBoolean("UseSleep"))
+		{
+			if(plugin.getConfig().getBoolean("useEssentials"))
+			{
+				BukkitRunnable tiredLoop = new SleepinessEss(plugin, player);
+				tiredLoop.runTaskTimer(plugin, plugin.getConfig().getInt("SleepTime"), plugin.getConfig().getInt("SleepTime"));
+			}
+			else
+			{
+				BukkitRunnable tiredLoop = new Sleepiness(plugin, player);
+				tiredLoop.runTaskTimer(plugin, plugin.getConfig().getInt("SleepTime"), plugin.getConfig().getInt("SleepTime"));
+			}
+			plugin.getCommand("sleep").setExecutor(new Sleep(plugin));
+			BukkitRunnable effectLoop = new SleepEffectCheck(plugin);
+			effectLoop.runTaskTimerAsynchronously(plugin, 60, 60);
 		}
 	}
 	@EventHandler
@@ -64,15 +88,26 @@ public final class ListenerFunction implements Listener
 			
 			if(PlayerData.getInt("data."+player.getUniqueId()+".tiredness") == 0)
 			{
-				event.setDeathMessage(player.getUniqueId()+" has fallen asleep and been eaten by monsters");
+				event.setDeathMessage(player.getDisplayName()+" has fallen asleep and been eaten by monsters");
 			}
 			if(PlayerData.getInt("data."+player.getUniqueId()+".thirst") == 0)
 			{
-				event.setDeathMessage(player.getUniqueId()+" has dehydrated and died.");
+				event.setDeathMessage(player.getDisplayName()+" has dehydrated and died.");
 			}
 			PlayerData.set("data."+player.getUniqueId()+".tiredness", 20);
 			PlayerData.set("data."+player.getUniqueId()+".thirst", 20);
 			plugin.saveYamls(PlayerDataFile, PlayerData);
+	}
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event)
+	{
+		FileConfiguration PlayerData = plugin.getPlayerData();
+		File PlayerDataFile = plugin.getPlayerFile();
+		Player player = event.getPlayer();
+		
+		PlayerData.set("data."+player.getUniqueId()+".tiredness", 20);
+		PlayerData.set("data."+player.getUniqueId()+".thirst", 20);
+		plugin.saveYamls(PlayerDataFile, PlayerData);
 	}
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event){
@@ -108,6 +143,8 @@ public final class ListenerFunction implements Listener
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onSignCreate(SignChangeEvent sign)
 	{
+		FileConfiguration PlayerData = plugin.getPlayerData();
+		File PlayerDataFile = plugin.getPlayerFile();
 		if(sign.getPlayer().hasPermission("rpext.createatm"))
 		{
 			if (sign.getLine(0).equals("[rpAtm]")) 
@@ -117,10 +154,42 @@ public final class ListenerFunction implements Listener
 		          sign.setLine(2, "or /gtake");
 		          sign.setLine(3, "to use ATM");
 		          sign.getBlock().setMetadata("isAtm", new FixedMetadataValue(plugin, "true"));
+		          int atms = PlayerData.getInt("data.atms");
+		          PlayerData.set("atms."+atms+".x", sign.getBlock().getX());
+		          PlayerData.set("atms."+atms+".y", sign.getBlock().getY());
+		          PlayerData.set("atms."+atms+".z", sign.getBlock().getZ());
+		          PlayerData.set("atms."+atms+".active", true);
+		          atms = atms+1;
+		          PlayerData.set("data.atms", atms);
+		          plugin.saveYamls(PlayerDataFile, PlayerData);
 			}
 		}
 	}
-	
+	@EventHandler(priority=EventPriority.HIGH)
+	public void onBlockBreak(BlockBreakEvent evnt)
+	{
+		Player player = evnt.getPlayer();
+		Block block = evnt.getBlock();
+		player.sendMessage("Breaking block");
+		if(block.hasMetadata("isAtm"))
+		{
+			block.removeMetadata("isAtm", plugin);
+			player.sendMessage("Breaking ATM");
+			FileConfiguration PlayerData = plugin.getPlayerData();
+			File PlayerDataFile = plugin.getPlayerFile();
+			ConfigurationSection atms = PlayerData.getConfigurationSection("atms");
+			for(String sAtms : atms.getKeys(false))
+			{
+				player.sendMessage("checking "+sAtms);
+				if(block.getX() == atms.getInt(sAtms+".x") && block.getY() == atms.getInt(sAtms+".y") && block.getZ() == atms.getInt(sAtms+".z"))
+				{
+					player.sendMessage("Deleting "+sAtms);
+					PlayerData.set("atms."+sAtms+".active", false);
+				}
+			}
+			plugin.saveYamls(PlayerDataFile, PlayerData);
+		}
+	}
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerUse(PlayerInteractEvent event)
@@ -144,7 +213,7 @@ public final class ListenerFunction implements Listener
 			}
 			if(b.getType()==Material.BED || b.getType() == Material.BED_BLOCK && player.getWorld().getTime() > 12541 && player.getWorld().getTime() < 23458)
 			{
-				plugin.PlayerData.set("data."+player.getName()+".tiredness", 20);
+				plugin.PlayerData.set("data."+player.getUniqueId()+".tiredness", 20);
 				plugin.saveYamls(PlayerDataFile, PlayerData);
 			}
 			
