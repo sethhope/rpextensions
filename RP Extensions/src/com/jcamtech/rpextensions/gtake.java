@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -44,7 +45,7 @@ public class gtake implements CommandExecutor{
 				Player player = (Player) sender;
 				PlayerData = plugin.getPlayerData();
 				File PlayerDataFile = plugin.getPlayerFile();
-				List<Block> lineOfSight = player.getLineOfSight(null, 5);
+				List<Block> lineOfSight = player.getLineOfSight((Set<Material>)null, 5);
 				boolean allow = false;
 				for(Block b : lineOfSight)
 				{
@@ -86,7 +87,7 @@ public class gtake implements CommandExecutor{
 					amount = PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
 					if(quarried <= amount)
 					{
-						ItemStack inven = new ItemStack(Material.getMaterial(plugin.getConfig().getInt("MoneyID")), quarried, (short)1);
+						ItemStack inven = new ItemStack(Material.getMaterial(plugin.getConfig().getString("MoneyID")), quarried, (short)1);
 						final Inventory inventory = player.getInventory();
 						HashMap<Integer, ItemStack> hash = inventory.addItem(inven);
 						ItemStack itemsLeft;

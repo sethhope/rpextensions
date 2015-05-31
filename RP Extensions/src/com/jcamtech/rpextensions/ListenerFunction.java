@@ -3,6 +3,7 @@ package com.jcamtech.rpextensions;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -198,7 +199,7 @@ public final class ListenerFunction implements Listener
 		FileConfiguration PlayerData = plugin.getPlayerData();
 		File PlayerDataFile = plugin.getPlayerFile();
 		FileConfiguration config = plugin.getConfig();
-		List<Block> los = event.getPlayer().getLineOfSight(null, 5);
+		List<Block> los = event.getPlayer().getLineOfSight((Set<Material>)null, 5);
 		for(Block b : los)
 		{
 			if(b.getType().getId() == config.getInt("ChairID") && player.isInsideVehicle() == false && plugin.config.getBoolean("UseChairs"))
@@ -222,19 +223,22 @@ public final class ListenerFunction implements Listener
 		{
 			if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
 			{
-				List<Block> lineOfSight = event.getPlayer().getLineOfSight(null, 5);
+				List<Block> lineOfSight = event.getPlayer().getLineOfSight((Set<Material>)null, 5);
 				
 				for(Block b : lineOfSight)
 				{
 					if(b.getType()==Material.STATIONARY_WATER || b.getType()==Material.WATER)
 					{
 						int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
-						count += 15;
-						if(count > 20)
-							count = 20;
-						player.sendMessage("Quenched thirst!");
-						PlayerData.set("data."+player.getUniqueId()+".thirst", count);
-						plugin.saveYamls(PlayerDataFile, PlayerData);
+						if(count < 20)
+						{
+							count += 15;
+							if(count > 20)
+								count = 20;
+							player.sendMessage("Quenched thirst!");
+							PlayerData.set("data."+player.getUniqueId()+".thirst", count);
+							plugin.saveYamls(PlayerDataFile, PlayerData);
+						}
 					}
 				}
 				if(player.getItemInHand().getType() == Material.POTION)
@@ -242,13 +246,16 @@ public final class ListenerFunction implements Listener
 					if(player.getItemInHand().getDurability() == 0)
 					{
 						int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
-						count += 15;
-						if(count > 20)
-							count = 20;
-						player.sendMessage("Quenched thirst!");
-						PlayerData.set("data."+player.getUniqueId()+".thirst", count);
-						player.getItemInHand().setType(Material.GLASS_BOTTLE);
-						plugin.saveYamls(PlayerDataFile, PlayerData);
+						if(count < 20)
+						{
+							count += 15;
+							if(count > 20)
+								count = 20;
+							player.sendMessage("Quenched thirst!");
+							PlayerData.set("data."+player.getUniqueId()+".thirst", count);
+							player.getItemInHand().setType(Material.GLASS_BOTTLE);
+							plugin.saveYamls(PlayerDataFile, PlayerData);
+						}
 					}
 				}
 			}

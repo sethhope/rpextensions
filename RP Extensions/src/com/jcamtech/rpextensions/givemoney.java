@@ -1,6 +1,7 @@
 package com.jcamtech.rpextensions;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -53,7 +54,7 @@ public class givemoney implements CommandExecutor{
 					return false;
 				}
 				PlayerData = plugin.getPlayerData();
-				List<Block> lineOfSight = player.getLineOfSight(null, 5);
+				List<Block> lineOfSight = player.getLineOfSight((Set<Material>)null, 5);
 				boolean allow = false;
 				for(Block b : lineOfSight)
 				{

@@ -3,6 +3,7 @@ package com.jcamtech.rpextensions;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -43,7 +44,7 @@ public class gstore implements CommandExecutor{
 				Player player = (Player) sender;
 				PlayerData = plugin.getPlayerData();
 				File PlayerDataFile = plugin.getPlayerFile();
-				List<Block> lineOfSight = player.getLineOfSight(null, 5);
+				List<Block> lineOfSight = player.getLineOfSight((Set<Material>)null, 5);
 				boolean allow = false;
 				for(Block b : lineOfSight)
 				{
