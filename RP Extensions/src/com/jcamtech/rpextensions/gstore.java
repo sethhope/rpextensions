@@ -105,21 +105,42 @@ public class gstore implements CommandExecutor{
 					{
 						InventoryUtil.removeInventoryItems(i, Material.getMaterial(plugin.getConfig().getInt("MoneyID")), baseAmount);
 						player.sendMessage("§2Stored "+baseAmount+plugin.getConfig().getString("MoneyUnit"));
-						int nuggets=0;
-						if(plugin.nodeExists(PlayerData, "data."+player.getUniqueId()+".nuggets"))
+						if(plugin.getConfig().getBoolean("useVault")==true)
 						{
-							nuggets = (int)PlayerData.get("data."+player.getUniqueId()+".nuggets");
-							PlayerData.set("data."+player.getUniqueId()+".nuggets", nuggets+baseAmount);
-							try {
-								PlayerData.save(PlayerDataFile);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						} else
-						{
-							if(baseAmount > 0)
+							plugin.econ.depositPlayer(player, baseAmount);
+							if(plugin.nodeExists(PlayerData, "data."+player.getUniqueId()+".nuggets"))
 							{
-								plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", stored);
+								PlayerData.set("data."+player.getUniqueId()+".nuggets", plugin.econ.getBalance(player));
+								try {
+									PlayerData.save(PlayerDataFile);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							} else
+							{
+								if(baseAmount > 0)
+								{
+									plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", plugin.econ.getBalance(player));
+								}
+							}
+						}else
+						{
+							int nuggets=0;
+							if(plugin.nodeExists(PlayerData, "data."+player.getUniqueId()+".nuggets"))
+							{
+								nuggets = (int)PlayerData.get("data."+player.getUniqueId()+".nuggets");
+								PlayerData.set("data."+player.getUniqueId()+".nuggets", nuggets+baseAmount);
+								try {
+									PlayerData.save(PlayerDataFile);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							} else
+							{
+								if(baseAmount > 0)
+								{
+									plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", stored);
+								}
 							}
 						}
 					}else

@@ -18,8 +18,19 @@ public class PayDay extends BukkitRunnable{
 			if(plugin.config.getBoolean("UseInterest"))
 			{
 				double rate = (double) plugin.config.get("InterestRate");
-				int money = plugin.PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
-				int total = (int) (money+(money*rate));
+				int money = 0;
+				int total = 0;
+				if(plugin.getConfig().getBoolean("useVault") == true)
+				{
+					money = (int) plugin.econ.getBalance(player);
+					plugin.econ.depositPlayer(player, money*rate);
+					total = (int) (money+(money*rate));
+				}
+				else
+				{
+					money = plugin.PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
+					total = (int) (money+(money*rate));
+				}
 				plugin.PlayerData.set("data."+player.getUniqueId()+".nuggets", total);
 				plugin.saveYamls(plugin.PlayerDataFile, plugin.PlayerData);
 				player.sendMessage("§3§lPAYDAY");

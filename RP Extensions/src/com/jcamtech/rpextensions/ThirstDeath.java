@@ -25,7 +25,6 @@ public class ThirstDeath extends BukkitRunnable{
 		PlayerDataFile = plugin.getPlayerFile();
 		PlayerData = plugin.getPlayerData();
 	}
-	@SuppressWarnings("deprecation")
 	public void run()
 	{
 		

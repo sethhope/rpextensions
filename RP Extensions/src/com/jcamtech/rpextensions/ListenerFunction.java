@@ -77,7 +77,7 @@ public final class ListenerFunction implements Listener
 			}
 			plugin.getCommand("sleep").setExecutor(new Sleep(plugin));
 			BukkitRunnable effectLoop = new SleepEffectCheck(plugin);
-			effectLoop.runTaskTimerAsynchronously(plugin, 60, 60);
+			effectLoop.runTaskTimer(plugin, 60, 60);
 		}
 	}
 	@EventHandler
@@ -171,7 +171,6 @@ public final class ListenerFunction implements Listener
 	{
 		Player player = evnt.getPlayer();
 		Block block = evnt.getBlock();
-		player.sendMessage("Breaking block");
 		if(block.hasMetadata("isAtm"))
 		{
 			block.removeMetadata("isAtm", plugin);

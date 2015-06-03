@@ -29,7 +29,9 @@ public class stats implements CommandExecutor{
 				Player player = (Player) sender;
 				PlayerData = plugin.getPlayerData();
 				String name = PlayerData.getString("data." + player.getUniqueId() + ".name");
-				int nugs = (int) PlayerData.get("data."+player.getUniqueId()+".nuggets");
+				int nugs = (int) PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
+				if(plugin.getConfig().getBoolean("useVault")==true)
+					nugs = (int) plugin.econ.getBalance(player);
 				int thirst = (int) PlayerData.get("data."+player.getUniqueId()+".thirst");
 				int sleepiness = PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
 				String unit = plugin.getConfig().getString("MoneyUnit");

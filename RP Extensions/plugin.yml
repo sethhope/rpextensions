@@ -1,6 +1,7 @@
 name: 'RP-Extensions'
 main: 'com.jcamtech.rpextensions.MainClass'
-version: '0.0.7'
+version: '0.0.9'
+softdepend: [Vault, Essentials]
 commands:
     stats:
         description: Displays your stats
@@ -48,6 +49,11 @@ commands:
         useage: /sleep
         permission: rpext.sleep
         permission-message: You don't have rpext.sleep in your permissions!
+    convertEcon:
+        description: Converts economy to vault
+        useage: /convertEcon
+        permission: rpext.convertEcon
+        permission-message: You don't have rpext.convertEcon in your permissions!
 permissions:
     rpext.*:
         description: Gives access to all rpext commands
@@ -61,6 +67,8 @@ permissions:
             rpext.createatm: true
             rpext.sleep: true
             rpext.gset: true
+            rpext.ggive: true
+            rpext.convertEcon: true
     rpext.read:
         description: Allows you to read stats
         default: true
@@ -90,4 +98,7 @@ permissions:
         default: false
     rpext.sleep:
         description: Allows player to reset sleep variable
+        default: false
+    rpext.convertEcon:
+        description: Allows player to convert the economy to vault
         default: false

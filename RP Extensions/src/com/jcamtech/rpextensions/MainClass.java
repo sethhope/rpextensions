@@ -14,8 +14,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 public class MainClass extends JavaPlugin {
 	
@@ -26,6 +31,11 @@ public class MainClass extends JavaPlugin {
 	public HashMap<Player, Boolean> isSitting;
 	FileConfiguration PlayerData;
 	FileConfiguration config;
+	
+	public static Economy econ = null;
+	public static Permission perms = null;
+	public static Chat chat = null;
+	
 	public void onEnable()//on enable
 	{	
 		getServer().getPluginManager().registerEvents(new ListenerFunction(this), this);
@@ -100,7 +110,7 @@ public class MainClass extends JavaPlugin {
 				}
 				getCommand("sleep").setExecutor(new Sleep(this));
 				BukkitRunnable effectLoop = new SleepEffectCheck(this);
-				effectLoop.runTaskTimerAsynchronously(this, 60, 60);
+				effectLoop.runTaskTimer(this, 60, 60);
 			}
 		}
 		if(config.getBoolean("UseInterest"))
@@ -108,8 +118,22 @@ public class MainClass extends JavaPlugin {
 			BukkitRunnable payday = new PayDay(this);
 			payday.runTaskTimer(this, config.getInt("InterestTime"), config.getInt("InterestTime"));
 		}
+		if(config.getBoolean("useVault"))
+		{
+			if(!setupEconomy())
+			{
+				this.getLogger().severe("Failed to load! Could not initialize vault! (try disabling useVault in config.yml");
+				this.getServer().getPluginManager().disablePlugin(this);
+				return;
+			}
+			setupPermissions();
+	        
+	        setupChat();
+	        
+	        getCommand("convertEcon").setExecutor(new convertEcon(this));
+		}
 		BukkitRunnable check = new ChairCheck(this);
-		check.runTaskTimerAsynchronously(this, 20, 50);
+		check.runTaskTimer(this, 20, 50);
 		getLogger().info("Finished initialization!");
 		
 	}
@@ -147,6 +171,35 @@ public class MainClass extends JavaPlugin {
 		playerMap.clear();
 		getLogger().info("Contega Stats Disabled");
 	}
+	private boolean setupEconomy()
+	{
+		if(getServer().getPluginManager().getPlugin("Vault") == null)
+		{
+			this.getLogger().severe("Failed to find vault");
+			return false;
+		}
+		RegisteredServiceProvider<Economy> rsp = this.getServer().getServicesManager().getRegistration(Economy.class);
+		if(rsp == null)
+		{
+			this.getLogger().severe("Failed to get rsp");
+			return false;
+		}
+		econ = rsp.getProvider();
+		return econ != null;
+	}
+	private boolean setupChat() {
+        RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
+        if(rsp != null)
+        	chat = rsp.getProvider();
+        return chat != null;
+    }
+
+    private boolean setupPermissions() {
+        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        if(rsp != null)
+        	perms = rsp.getProvider();
+        return perms != null;
+    }
 	private void firstRun() throws Exception
 	{
 		if(!configFile.exists())

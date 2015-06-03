@@ -29,7 +29,6 @@ public class gtake implements CommandExecutor{
 	{
 		this.plugin = plugin;
 	}
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
@@ -84,7 +83,10 @@ public class gtake implements CommandExecutor{
 						return false;
 					}
 					int amount=0;
-					amount = PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
+					if(plugin.getConfig().getBoolean("useVault") == true)
+						amount = (int) plugin.econ.getBalance(player);
+					else
+						amount = PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
 					if(quarried <= amount)
 					{
 						ItemStack inven = new ItemStack(Material.getMaterial(plugin.getConfig().getString("MoneyID")), quarried, (short)1);
@@ -97,11 +99,26 @@ public class gtake implements CommandExecutor{
 							quarried -= itemsLeft.getAmount();
 							player.sendMessage("§4Not enough room in inventory. Only stored "+itemsLeft.getAmount()+config.getString("MoneyUnit"));
 						}
-						PlayerData.set("data."+player.getUniqueId()+".nuggets", amount-quarried);
-						try {
-							PlayerData.save(PlayerDataFile);
-						} catch (IOException e) {
-							e.printStackTrace();
+						if(plugin.getConfig().getBoolean("useVault")==true)
+						{
+							plugin.econ.withdrawPlayer(player, quarried);
+							if(plugin.nodeExists(PlayerData, "data."+player.getUniqueId()+".nuggets"))
+							{
+								PlayerData.set("data."+player.getUniqueId()+".nuggets", plugin.econ.getBalance(player));
+								try {
+									PlayerData.save(PlayerDataFile);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}else
+						{
+							PlayerData.set("data."+player.getUniqueId()+".nuggets", amount-quarried);
+							try {
+								PlayerData.save(PlayerDataFile);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 						player.sendMessage("§2Withdrew "+quarried+plugin.getConfig().getString("MoneyUnit"));
 					} else 

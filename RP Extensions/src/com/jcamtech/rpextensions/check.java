@@ -35,8 +35,10 @@ public class check implements CommandExecutor{
 				Player target = (Bukkit.getServer().getPlayer(args[0]));
 				PlayerData = plugin.getPlayerData();
 				String name = PlayerData.getString("data." + target.getUniqueId() + ".name");
-				int nugs = (int) PlayerData.get("data."+target.getUniqueId()+".nuggets");
-				int thirst = (int) PlayerData.get("data."+target.getUniqueId()+".thirst");
+				int nugs = (int) PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
+				if(plugin.getConfig().getBoolean("useVault")==true)
+					nugs = (int) plugin.econ.getBalance(target);
+				int thirst = (int) PlayerData.getInt("data."+target.getUniqueId()+".thirst");
 				int sleepiness = PlayerData.getInt("data."+target.getUniqueId()+".tiredness");
 				String unit = plugin.getConfig().getString("MoneyUnit");
 				player.sendMessage("§4------TARGET--STATS------");

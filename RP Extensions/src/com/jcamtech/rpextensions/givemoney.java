@@ -93,10 +93,19 @@ public class givemoney implements CommandExecutor{
 					}
 					int amount=0;
 					int  targetAmount = 0;
-					targetAmount = PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
+					if(plugin.getConfig().getBoolean("useVault")==true)
+						targetAmount = (int) plugin.econ.getBalance(target);
+					else
+						targetAmount = PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
 					
 					targetAmount = targetAmount + quarried;
 					PlayerData.set("data."+target.getUniqueId()+".nuggets", targetAmount);
+					if(plugin.getConfig().getBoolean("useVault")==true)
+					{
+						double cura = plugin.econ.getBalance(target);
+						plugin.econ.withdrawPlayer(target, cura);
+						plugin.econ.depositPlayer(target, targetAmount);
+					}
 					player.sendMessage("§2Gave "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
 					target.sendMessage(player.getDisplayName()+" §2has given you "+quarried+plugin.getConfig().getString("MoneyUnit"));
 					

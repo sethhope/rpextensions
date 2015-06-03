@@ -93,10 +93,14 @@ public class gset implements CommandExecutor{
 					}
 					int amount=0;
 					int  targetAmount = 0;
-					targetAmount = PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
-					
 					targetAmount = quarried;
 					PlayerData.set("data."+target.getUniqueId()+".nuggets", targetAmount);
+					if(plugin.getConfig().getBoolean("useVault")==true)
+					{
+						double curA = plugin.econ.getBalance(target);
+						plugin.econ.withdrawPlayer(target, curA);
+						plugin.econ.depositPlayer(target, targetAmount);
+					}
 					player.sendMessage("§2Set "+target.getDisplayName()+"§2's account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
 					target.sendMessage(player.getDisplayName()+" §2has set your account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
 					

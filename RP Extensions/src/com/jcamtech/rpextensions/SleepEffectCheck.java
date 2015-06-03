@@ -13,7 +13,6 @@ public class SleepEffectCheck extends BukkitRunnable{
 	{
 		this.plugin = plugin;
 	}
-	@SuppressWarnings("deprecation")
 	@Override
 	public void run() {
 		for(final Player player : plugin.getServer().getOnlinePlayers())

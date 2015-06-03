@@ -93,10 +93,20 @@ public class gtransfer implements CommandExecutor{
 					}
 					int amount=0;
 					int  targetAmount = 0;
+					if(plugin.getConfig().getBoolean("useVault")==true)
+					{
+						targetAmount = (int) plugin.econ.getBalance(target);
+						amount = (int) plugin.econ.getBalance(player);
+					}
 					targetAmount = PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
 					amount = PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
 					if(amount >= quarried)
 					{
+						if(plugin.getConfig().getBoolean("useVault")==true)
+						{
+							plugin.econ.withdrawPlayer(player, quarried);
+							plugin.econ.depositPlayer(target, quarried);
+						}
 						amount = amount - quarried;
 						targetAmount = targetAmount + quarried;
 						PlayerData.set("data."+player.getUniqueId()+".nuggets", amount);
