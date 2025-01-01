@@ -19,15 +19,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -180,6 +184,12 @@ public final class ListenerFunction implements Listener
 		Block block = evnt.getBlock();
 		if(block.hasMetadata("isAtm"))
 		{
+			if(player.hasPermission("rpext.createatm") == false)
+			{
+				evnt.setCancelled(true);
+				player.sendMessage("You do not have permission to break an ATM!");
+				return;
+			}
 			block.removeMetadata("isAtm", plugin);
 			player.sendMessage("Breaking ATM");
 			FileConfiguration PlayerData = plugin.getPlayerData();
@@ -187,14 +197,84 @@ public final class ListenerFunction implements Listener
 			ConfigurationSection atms = PlayerData.getConfigurationSection("atms");
 			for(String sAtms : atms.getKeys(false))
 			{
-				player.sendMessage("checking "+sAtms);
 				if(block.getX() == atms.getInt(sAtms+".x") && block.getY() == atms.getInt(sAtms+".y") && block.getZ() == atms.getInt(sAtms+".z"))
 				{
 					player.sendMessage("Deleting "+sAtms);
-					PlayerData.set("atms."+sAtms+".active", false);
+					PlayerData.set("atms."+sAtms+".x", null);
+					PlayerData.set("atms."+sAtms+".y", null);
+					PlayerData.set("atms."+sAtms+".z", null);
+					PlayerData.set("atms."+sAtms+".active", null);
+					PlayerData.set("atms."+sAtms, null);
 				}
 			}
 			plugin.saveYamls(PlayerDataFile, PlayerData);
+		}
+	}
+	@EventHandler
+	public void onPlayerPickupItem(EntityPickupItemEvent event)
+	{
+		if(event.getEntityType() != EntityType.PLAYER)
+		{
+			return;
+		}
+		FileConfiguration config = plugin.getConfig();
+		if(config.getBoolean("RenameMoney") == true)
+		{
+			if(event.getItem().getItemStack().getType() == Material.getMaterial(config.getString("MoneyID")))
+			{
+				ItemMeta meta = event.getItem().getItemStack().getItemMeta();
+				meta.setDisplayName(config.getString("MoneyName"));
+				event.getItem().getItemStack().setItemMeta(meta);
+			}
+		}
+	}
+	@EventHandler
+	public void onPlayerDropItem(PlayerDropItemEvent event)
+	{
+		FileConfiguration config = plugin.getConfig();
+		if(config.getBoolean("RenameMoney") == true)
+		{
+			if(event.getItemDrop().getItemStack().getType() == Material.getMaterial(config.getString("MoneyID")))
+			{
+				ItemMeta meta = plugin.getServer().getItemFactory().getItemMeta(Material.getMaterial(config.getString("MoneyID")));
+				event.getItemDrop().getItemStack().setItemMeta(meta);
+			}
+		}
+	}
+	@EventHandler
+	public void onPlayerInventoryClick(InventoryClickEvent event)
+	{
+		FileConfiguration config = plugin.getConfig();
+		if(!config.getBoolean("RenameMoney"))
+		{
+			return;
+		}
+		if(event.getCurrentItem().getType() == Material.getMaterial(config.getString("MoneyID")))
+		{
+			ItemMeta meta = event.getCurrentItem().getItemMeta();
+			meta.setDisplayName(config.getString("MoneyName"));
+			event.getCursor().setItemMeta(meta);
+			event.getCurrentItem().setItemMeta(meta);
+		}
+	}
+	@EventHandler
+	public void onPlayerCraft(PrepareItemCraftEvent event)
+	{
+		FileConfiguration config = plugin.getConfig();
+		if(!config.getBoolean("RenameMoney"))
+		{
+			return;
+		}
+		if(event.getRecipe() == null)
+		{
+			return;
+		}
+		if(event.getRecipe().getResult().getType() == Material.getMaterial(config.getString("MoneyID")))
+		{
+			ItemMeta meta = event.getRecipe().getResult().getItemMeta();
+			meta.setDisplayName(config.getString("MoneyName"));
+			event.getInventory().getResult().setItemMeta(meta);
+			//event.getRecipe().getResult().setItemMeta(meta);
 		}
 	}
 	@EventHandler
@@ -230,8 +310,10 @@ public final class ListenerFunction implements Listener
 					{
 						count += 15;
 						if(count > 20)
+						{
 							count = 20;
-						player.sendMessage("Quenched thirst!");
+						}
+						player.sendMessage("Thirst Quenched.");
 						PlayerData.set("data."+player.getUniqueId()+".thirst", count);
 						plugin.saveYamls(PlayerDataFile, PlayerData);
 					}
@@ -248,7 +330,7 @@ public final class ListenerFunction implements Listener
 		File PlayerDataFile = plugin.getPlayerFile();
 		FileConfiguration config = plugin.getConfig();
 		List<Block> los = event.getPlayer().getLineOfSight((Set<Material>)null, 5);
-		if(event.getAction() == Action.RIGHT_CLICK_BLOCK) //check for right clicking a block
+		if(event.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking()) //check for right clicking a block
 		{
 			for(Block b : los)
 			{
@@ -260,8 +342,9 @@ public final class ListenerFunction implements Listener
 					plugin.isSitting.put(player, true);
 					plugin.playerMap.put(player, chair);
 					playerLoc.put(player, player.getLocation());
-					ArrowDespawnCheck adc = new ArrowDespawnCheck(plugin, chair);
-					adc.runTaskTimer(plugin, 10, 80);
+					ArrowDespawnCheck adc = new ArrowDespawnCheck(plugin, chair, player);
+					adc.runTaskTimer(plugin, 10, 30);
+					event.setCancelled(true);
 				}
 			}
 		}

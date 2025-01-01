@@ -39,7 +39,6 @@ public class PayDay extends BukkitRunnable{
 				player.sendMessage("§3Interest Gained: "+Math.round(money*rate));
 				player.sendMessage("§3Final Balance: "+total+plugin.config.get("MoneyUnit"));
 				player.sendMessage("§4==============================");
-				
 			}
 		}
 	}

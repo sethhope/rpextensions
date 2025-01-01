@@ -26,7 +26,7 @@ public class ItemNameCheck extends BukkitRunnable{
 			{
 				if(inven != null)
 				{
-					if(inven.getType().equals(Material.getMaterial(plugin.getConfig().getString("MoneyID"))))
+					if(inven.getType() == Material.getMaterial(plugin.getConfig().getString("MoneyID")))
 					{
 						ItemMeta meta = inven.getItemMeta();
 						meta.setDisplayName(plugin.getConfig().getString("MoneyName"));

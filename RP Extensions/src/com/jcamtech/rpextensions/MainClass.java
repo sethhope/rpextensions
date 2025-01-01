@@ -74,7 +74,7 @@ public class MainClass extends JavaPlugin {
 			getCommand("gstore").setExecutor(new gstore(this));
 			getCommand("gtake").setExecutor(new gtake(this));
 			getCommand("gtransfer").setExecutor(new gtransfer(this));
-			getCommand("ggive").setExecutor(new givemoney(this));
+			//getCommand("ggive").setExecutor(new givemoney(this));
 			getCommand("gset").setExecutor(new gset(this));
 		}
 		playerMap = new HashMap<Player, Entity>();
@@ -117,23 +117,27 @@ public class MainClass extends JavaPlugin {
 				effectLoop.runTaskTimer(this, 60, 60);
 			}
 		}
-		if(config.getBoolean("UseInterest"))
+		if(config.getBoolean("UseGoldNuggetBank"))
 		{
-			BukkitRunnable payday = new PayDay(this);
-			payday.runTaskTimer(this, config.getInt("InterestTime"), config.getInt("InterestTime"));
-		}
-		if(config.getBoolean("useVault"))
-		{
-			if(!setupEconomy())
+			if(config.getBoolean("UseInterest"))
 			{
-				this.getLogger().severe("Failed to load! Could not initialize vault! (try disabling useVault in config.yml");
-				this.getServer().getPluginManager().disablePlugin(this);
-				return;
+				BukkitRunnable payday = new PayDay(this);
+				payday.runTaskTimer(this, config.getInt("InterestTime"), config.getInt("InterestTime"));
 			}
-			setupPermissions();
-	        
-	        setupChat();
-	        getCommand("convertEcon").setExecutor(new convertEcon(this));
+			if(config.getBoolean("useVault"))
+			{
+				if(!setupEconomy())
+				{
+					this.getLogger().severe("Failed to load! Could not initialize vault! (try disabling useVault in config.yml");
+					this.getServer().getPluginManager().disablePlugin(this);
+					return;
+				}
+				setupPermissions();
+		        setupChat();
+		        BukkitRunnable roundMoney = new MoneyRoundCheck(this);
+		        roundMoney.runTaskTimer(this, 10, 20);
+		        getCommand("convertEcon").setExecutor(new convertEcon(this));
+			}
 		}
 		BukkitRunnable check = new ChairCheck(this);
 		check.runTaskTimer(this, 20, 50);
