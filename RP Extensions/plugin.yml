@@ -1,6 +1,7 @@
 name: 'RP-Extensions'
 main: 'com.jcamtech.rpextensions.MainClass'
-version: '0.0.9'
+version: '0.0.12'
+api-version: '1.20'
 softdepend: [Vault, Essentials]
 commands:
     stats:
@@ -8,7 +9,6 @@ commands:
         useage: /stats
         permission: rpext.read
         permission-message: You don't have rpext.read in your permissions!
-        
     checkstats:
         description: Displays others stats
         useage: /checkstats [player]
@@ -29,11 +29,6 @@ commands:
         useage: /gtransfer [player] [amount]
         permission: rpext.gtransfer
         permission-message: You don't have rpext.gtransfer in your permissions!
-    ggive:
-        description: Transfers gold to another player
-        useage: /ggive [player] [amount]
-        permission: rpext.ggive
-        permission-message: You don't have rpext.ggive in your permissions!
     gset:
         description: Transfers gold to another player
         useage: /gset [player] [amount]
@@ -93,11 +88,17 @@ permissions:
     rpext.quench:
         description: Allows you to quench your own thirst
         default: false
+    rpext.quench.others:
+        description: Allows you to quench the thirst of others
+        default: false
     rpext.createatm:
         description: Allows you to make an ATM machine
         default: false
     rpext.sleep:
         description: Allows player to reset sleep variable
+        default: false
+    rpext.sleep.others:
+        description: Allows you to reset the sleep variable of others
         default: false
     rpext.convertEcon:
         description: Allows player to convert the economy to vault

@@ -1,29 +1,63 @@
 #////////////RPEXT CONFIG//////////////#
+#Display debug info
 DebugMode: false
+
+#Enable the banking features of the plugin
 UseGoldNuggetBank: true
+
+#Enable thirst simulation
 UseThirst: true
-#Time in ticks between thirst depletion 
+
+#Time in ticks between thirst depletion
+#There are 20 thirst points, damage occurs at 0. 
+#60 ticks = 1 second
 ThirstTime: 1200
-SleepTime: 9600
+
+#Enable sleep requirements
 UseSleep: true
-#//////EXPERIMENTAL!!!/////////////////#
-UseChairs: false 
 
-#SETTINGS
+#Time in ticks between sleep depletion
+#There are 20 sleep points, death occurs at 0.
+#60 ticks = 1 second
+SleepTime: 9600
 
-MoneyID: 371
+#Enable sitting on blocks
+UseChairs: true
+
+#Specify which block will the considered a chair
+ChairID: "OAK_STAIRS"
+
+
+#//////////////BANKING///////////////#
+#Which Item ID should be used as money
+MoneyID: "GOLD_NUGGET"
+
+#Money suffix
 MoneyUnit: 'g'
-MoneyName: '§cCoin'
+
+#Enable item renaming for money items
+RenameMoney: true
+
+#What money will be called in the inventory
+MoneyName: 'Â§cCoin'
+
+#Enable gradual interest
 UseInterest: true
 
-useEssentials: false
-useVault: false
+#The rate at which interest is applied.
+#Interest is calculated as balance = balance + (balanace * interest rate)
+InterestRate: 0.01
 
-#Rate that interest will multiply by
-InterestRate: 0.1
-
-#time between paydays in ticks (20 ticks = 1 second)
+#Time in ticks between interest payments.
+#60 ticks = 1 second
 InterestTime: 12000
 
-ChairID: 53
+#PLUGIN COMPATIBILITY
+
+#Enable essentials integration
+useEssentials: false
+
+#Enable vault integration
+useVault: false
+
 #//////////////END CONFIG///////////////#
