@@ -65,8 +65,12 @@ public class MainClass extends JavaPlugin {
 		getCommand("checkstats").setExecutor(new check(this));
 		if(config.getBoolean("UseGoldNuggetBank") == true)
 		{
-			ItemNameCheck itemCheck = new ItemNameCheck(this);
-			itemCheck.runTaskTimerAsynchronously(this, 10, 20);
+			if(config.getBoolean("RenameMoney") == true)
+			{
+				ItemNameCheck itemCheck = new ItemNameCheck(this);
+				itemCheck.runTaskTimerAsynchronously(this, 10, 20);
+			}
+			
 			getCommand("gstore").setExecutor(new gstore(this));
 			getCommand("gtake").setExecutor(new gtake(this));
 			getCommand("gtransfer").setExecutor(new gtransfer(this));
@@ -129,7 +133,6 @@ public class MainClass extends JavaPlugin {
 			setupPermissions();
 	        
 	        setupChat();
-	        
 	        getCommand("convertEcon").setExecutor(new convertEcon(this));
 		}
 		BukkitRunnable check = new ChairCheck(this);

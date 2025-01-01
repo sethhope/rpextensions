@@ -25,7 +25,7 @@ public class givemoney implements CommandExecutor{
 	{
 		this.plugin = plugin;
 	}
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
@@ -50,7 +50,7 @@ public class givemoney implements CommandExecutor{
 				}
 				if(target == null)
 				{
-					player.sendMessage("§cPlayer is not online");
+					player.sendMessage("Â§cPlayer is not online");
 					return false;
 				}
 				PlayerData = plugin.getPlayerData();
@@ -58,8 +58,8 @@ public class givemoney implements CommandExecutor{
 				boolean allow = false;
 				for(Block b : lineOfSight)
 				{
-					
-					if(b.getType() == Material.SIGN || b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN)
+					//TODO: Add iterator check for sign types
+					if(b.getType() == Material.OAK_SIGN || b.getType() == Material.OAK_HANGING_SIGN || b.getType() == Material.OAK_WALL_HANGING_SIGN || b.getType() == Material.OAK_WALL_SIGN)
 					{
 						if(b.hasMetadata("isAtm"))
 						{
@@ -88,13 +88,12 @@ public class givemoney implements CommandExecutor{
 				{
 					if(quarried < 0)
 					{
-						player.sendMessage("§cInvalid amount of money");
+						player.sendMessage("Â§cInvalid amount of money");
 						return false;
 					}
-					int amount=0;
 					int  targetAmount = 0;
 					if(plugin.getConfig().getBoolean("useVault")==true)
-						targetAmount = (int) plugin.econ.getBalance(target);
+						targetAmount = (int) MainClass.econ.getBalance(target);
 					else
 						targetAmount = PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
 					
@@ -102,16 +101,16 @@ public class givemoney implements CommandExecutor{
 					PlayerData.set("data."+target.getUniqueId()+".nuggets", targetAmount);
 					if(plugin.getConfig().getBoolean("useVault")==true)
 					{
-						double cura = plugin.econ.getBalance(target);
-						plugin.econ.withdrawPlayer(target, cura);
-						plugin.econ.depositPlayer(target, targetAmount);
+						double cura = MainClass.econ.getBalance(target);
+						MainClass.econ.withdrawPlayer(target, cura);
+						MainClass.econ.depositPlayer(target, targetAmount);
 					}
-					player.sendMessage("§2Gave "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
-					target.sendMessage(player.getDisplayName()+" §2has given you "+quarried+plugin.getConfig().getString("MoneyUnit"));
+					player.sendMessage("Â§2Gave "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
+					target.sendMessage(player.getDisplayName()+" Â§2has given you "+quarried+plugin.getConfig().getString("MoneyUnit"));
 					
 				}else
 				{
-					player.sendMessage("§cYou are not at an ATM");
+					player.sendMessage("Â§cYou are not at an ATM");
 					return false;
 				}
 			}

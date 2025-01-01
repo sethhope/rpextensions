@@ -28,7 +28,7 @@ public class gstore implements CommandExecutor{
 	{
 		this.plugin = plugin;
 	}
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
@@ -49,7 +49,7 @@ public class gstore implements CommandExecutor{
 				for(Block b : lineOfSight)
 				{
 					
-					if(b.getType() == Material.SIGN || b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN)
+					if(b.getType() == Material.OAK_SIGN || b.getType() == Material.OAK_HANGING_SIGN || b.getType() == Material.OAK_WALL_HANGING_SIGN || b.getType() == Material.OAK_WALL_SIGN)
 					{
 						if(b.hasMetadata("isAtm"))
 						{
@@ -81,7 +81,7 @@ public class gstore implements CommandExecutor{
 					int baseAmount = Integer.parseInt(args[0]);
 					if(baseAmount < 0)
 					{
-						player.sendMessage("§cInvalid amount!");
+						player.sendMessage("Â§cInvalid amount!");
 						return false;
 					}
 					if(plugin.debugMode)
@@ -95,7 +95,7 @@ public class gstore implements CommandExecutor{
 					{
 						if(inven != null)
 						{
-							if(inven.getType().equals(Material.getMaterial(plugin.getConfig().getInt("MoneyID"))))
+							if(inven.getType().equals(Material.getMaterial(plugin.getConfig().getString("MoneyID"))))
 							{
 								amount += inven.getAmount();
 							}
@@ -103,14 +103,14 @@ public class gstore implements CommandExecutor{
 					}
 					if(baseAmount <= amount)
 					{
-						InventoryUtil.removeInventoryItems(i, Material.getMaterial(plugin.getConfig().getInt("MoneyID")), baseAmount);
-						player.sendMessage("§2Stored "+baseAmount+plugin.getConfig().getString("MoneyUnit"));
+						InventoryUtil.removeInventoryItems(i, Material.getMaterial(plugin.getConfig().getString("MoneyID")), baseAmount);
+						player.sendMessage("Â§2Stored "+baseAmount+plugin.getConfig().getString("MoneyUnit"));
 						if(plugin.getConfig().getBoolean("useVault")==true)
 						{
-							plugin.econ.depositPlayer(player, baseAmount);
+							MainClass.econ.depositPlayer(player, baseAmount);
 							if(plugin.nodeExists(PlayerData, "data."+player.getUniqueId()+".nuggets"))
 							{
-								PlayerData.set("data."+player.getUniqueId()+".nuggets", plugin.econ.getBalance(player));
+								PlayerData.set("data."+player.getUniqueId()+".nuggets", MainClass.econ.getBalance(player));
 								try {
 									PlayerData.save(PlayerDataFile);
 								} catch (IOException e) {
@@ -120,7 +120,7 @@ public class gstore implements CommandExecutor{
 							{
 								if(baseAmount > 0)
 								{
-									plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", plugin.econ.getBalance(player));
+									plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", MainClass.econ.getBalance(player));
 								}
 							}
 						}else
@@ -145,12 +145,12 @@ public class gstore implements CommandExecutor{
 						}
 					}else
 					{
-						player.sendMessage("§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" to store");
+						player.sendMessage("Â§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" to store");
 					}
 				}
 				else
 				{
-					player.sendMessage("§cYou are not at an ATM");
+					player.sendMessage("Â§cYou are not at an ATM");
 				}
 				
 			}

@@ -22,8 +22,8 @@ public class PayDay extends BukkitRunnable{
 				int total = 0;
 				if(plugin.getConfig().getBoolean("useVault") == true)
 				{
-					money = (int) plugin.econ.getBalance(player);
-					plugin.econ.depositPlayer(player, money*rate);
+					money = (int) MainClass.econ.getBalance(player);
+					MainClass.econ.depositPlayer(player, money*rate);
 					total = (int) (money+(money*rate));
 				}
 				else
@@ -33,12 +33,12 @@ public class PayDay extends BukkitRunnable{
 				}
 				plugin.PlayerData.set("data."+player.getUniqueId()+".nuggets", total);
 				plugin.saveYamls(plugin.PlayerDataFile, plugin.PlayerData);
-				player.sendMessage("§3§lPAYDAY");
-				player.sendMessage("§4==============================");
-				player.sendMessage("§3Original Amount: "+money+plugin.config.get("MoneyUnit")+" Interest Rate: "+rate);
-				player.sendMessage("§3Interest Gained: "+Math.round(money*rate));
-				player.sendMessage("§3Final Balance: "+total+plugin.config.get("MoneyUnit"));
-				player.sendMessage("§4==============================");
+				player.sendMessage("Â§3Â§lPAYDAY");
+				player.sendMessage("Â§4==============================");
+				player.sendMessage("Â§3Original Amount: "+money+plugin.config.get("MoneyUnit")+" Interest Rate: "+rate);
+				player.sendMessage("Â§3Interest Gained: "+Math.round(money*rate));
+				player.sendMessage("Â§3Final Balance: "+total+plugin.config.get("MoneyUnit"));
+				player.sendMessage("Â§4==============================");
 				
 			}
 		}

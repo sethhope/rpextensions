@@ -31,18 +31,18 @@ public class stats implements CommandExecutor{
 				String name = PlayerData.getString("data." + player.getUniqueId() + ".name");
 				int nugs = (int) PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
 				if(plugin.getConfig().getBoolean("useVault")==true)
-					nugs = (int) plugin.econ.getBalance(player);
+					nugs = (int) MainClass.econ.getBalance(player);
 				int thirst = (int) PlayerData.get("data."+player.getUniqueId()+".thirst");
 				int sleepiness = PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
 				String unit = plugin.getConfig().getString("MoneyUnit");
-				player.sendMessage("§4----------STATS----------");
-				player.sendMessage("§fUUID: §9"+player.getUniqueId());
-				player.sendMessage("§fName: §9" + name + "§f|Thirst: §9"+thirst);
+				player.sendMessage("Â§4----------STATS----------");
+				player.sendMessage("Â§fUUID: Â§9"+player.getUniqueId());
+				player.sendMessage("Â§fName: Â§9" + name + "Â§f|Thirst: Â§9"+thirst);
 				if(plugin.getConfig().getBoolean("UseSleep"))
-					player.sendMessage("§fSleepiness: §9"+sleepiness);
+					player.sendMessage("Â§fSleepiness: Â§9"+sleepiness);
 				if(plugin.getConfig().getBoolean("UseGoldNuggetBank")==true)
-					player.sendMessage("§fMoney: §9" + nugs + unit);
-				player.sendMessage("§4-------------------------");
+					player.sendMessage("Â§fMoney: Â§9" + nugs + unit);
+				player.sendMessage("Â§4-------------------------");
 			}
 			
 			return true;

@@ -66,7 +66,7 @@ public class ThirstLoop extends BukkitRunnable
 			{
 				BukkitRunnable thirstDie = new ThirstDeath(plugin, player);
 				thirstDie.runTaskTimer(plugin, 10, 20);
-				player.sendMessage("§cYou are dehydrated!");
+				player.sendMessage("Â§cYou are dehydrated!");
 			}
 			if(plugin.debugMode)
 				plugin.getLogger().info("Thirst for "+player.getDisplayName()+": "+count);

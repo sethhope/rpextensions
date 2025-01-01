@@ -20,19 +20,26 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.potion.PotionType;
+
 
 
 public final class ListenerFunction implements Listener
 {
 	private MainClass plugin;
 	private HashMap<Player, Location> playerLoc = new HashMap<Player, Location>();
+	//private Material[] bedTypes = {Material.BLACK_BED, Material.BLUE_BED, Material.BROWN_BED, Material.CYAN_BED, Material.GRAY_BED, Material.GREEN_BED, Material.LIGHT_BLUE_BED, Material.LIGHT_GRAY_BED, Material.LIME_BED, Material.MAGENTA_BED, Material.ORANGE_BED, Material.PINK_BED, Material.PURPLE_BED, Material.RED_BED, Material.WHITE_BED, Material.YELLOW_BED};
 	public ListenerFunction(MainClass plugin)
 	{
 		this.plugin = plugin;
@@ -150,7 +157,7 @@ public final class ListenerFunction implements Listener
 		{
 			if (sign.getLine(0).equals("[rpAtm]")) 
 			{
-		          sign.setLine(0, "ง5{ATM}");
+		          sign.setLine(0, "ยง5{ATM}");
 		          sign.setLine(1, "Use /gstore");
 		          sign.setLine(2, "or /gtake");
 		          sign.setLine(3, "to use ATM");
@@ -190,43 +197,82 @@ public final class ListenerFunction implements Listener
 			plugin.saveYamls(PlayerDataFile, PlayerData);
 		}
 	}
-	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void onPlayerUse(PlayerInteractEvent event)
+	public void onPlayerBedEnter(PlayerBedEnterEvent event)
 	{
 		Player player = event.getPlayer();
 		FileConfiguration PlayerData = plugin.getPlayerData();
 		File PlayerDataFile = plugin.getPlayerFile();
 		FileConfiguration config = plugin.getConfig();
-		List<Block> los = event.getPlayer().getLineOfSight((Set<Material>)null, 5);
-		for(Block b : los)
+		if(config.getBoolean("UseSleep") == true)
 		{
-			if(b.getType().getId() == config.getInt("ChairID") && player.isInsideVehicle() == false && plugin.config.getBoolean("UseChairs"))
-			{
-				Entity chair = b.getWorld().spawnEntity(b.getLocation().add(0.5,0.5,0.5), EntityType.ARROW);
-				chair.setPassenger(player);
-				plugin.isSitting.put(player, true);
-				plugin.playerMap.put(player, chair);
-				playerLoc.put(player, player.getLocation());
-				ArrowDespawnCheck adc = new ArrowDespawnCheck(plugin, chair);
-				adc.runTaskTimer(plugin, 10, 80);
-			}
-			if(b.getType()==Material.BED || b.getType() == Material.BED_BLOCK && player.getWorld().getTime() > 12541 && player.getWorld().getTime() < 23458)
-			{
-				plugin.PlayerData.set("data."+player.getUniqueId()+".tiredness", 20);
-				plugin.saveYamls(PlayerDataFile, PlayerData);
-			}
-			
+			plugin.PlayerData.set("data."+player.getUniqueId()+".tiredness", 20);
+			plugin.saveYamls(PlayerDataFile, PlayerData);
 		}
-		if(plugin.getConfig().getBoolean("UseThirst") == true)
+	}
+	@EventHandler
+	public void onPlayerConsume(PlayerItemConsumeEvent event)
+	{
+		Player player = event.getPlayer();
+		FileConfiguration PlayerData = plugin.getPlayerData();
+		File PlayerDataFile = plugin.getPlayerFile();
+		FileConfiguration config = plugin.getConfig();
+		if(config.getBoolean("UseThirst") == true)
+		{
+			if(event.getItem().getItemMeta() instanceof PotionMeta)
+			{
+				final PotionMeta meta = (PotionMeta) event.getItem().getItemMeta();
+				final PotionType data = meta.getBasePotionType();
+				if(data == PotionType.WATER)
+				{
+					int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
+					if(count < 20)
+					{
+						count += 15;
+						if(count > 20)
+							count = 20;
+						player.sendMessage("Quenched thirst!");
+						PlayerData.set("data."+player.getUniqueId()+".thirst", count);
+						plugin.saveYamls(PlayerDataFile, PlayerData);
+					}
+				}
+			}
+		}
+	}
+	@EventHandler
+	public void onPlayerUse(PlayerInteractEvent event)
+	{
+		//Get standard vars
+		Player player = event.getPlayer();
+		FileConfiguration PlayerData = plugin.getPlayerData();
+		File PlayerDataFile = plugin.getPlayerFile();
+		FileConfiguration config = plugin.getConfig();
+		List<Block> los = event.getPlayer().getLineOfSight((Set<Material>)null, 5);
+		if(event.getAction() == Action.RIGHT_CLICK_BLOCK) //check for right clicking a block
+		{
+			for(Block b : los)
+			{
+				
+				if(b.getType() == Material.getMaterial(config.getString("ChairID")) && player.isInsideVehicle() == false && plugin.config.getBoolean("UseChairs") == true)
+				{
+					Entity chair = b.getWorld().spawnEntity(b.getLocation().add(0.5,0.0,0.5), EntityType.ARROW);
+					chair.addPassenger(player);
+					plugin.isSitting.put(player, true);
+					plugin.playerMap.put(player, chair);
+					playerLoc.put(player, player.getLocation());
+					ArrowDespawnCheck adc = new ArrowDespawnCheck(plugin, chair);
+					adc.runTaskTimer(plugin, 10, 80);
+				}
+			}
+		}
+		if(config.getBoolean("UseThirst") == true)
 		{
 			if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
 			{
 				List<Block> lineOfSight = event.getPlayer().getLineOfSight((Set<Material>)null, 5);
-				
 				for(Block b : lineOfSight)
 				{
-					if(b.getType()==Material.STATIONARY_WATER || b.getType()==Material.WATER)
+					if(b.getType()==Material.WATER)
 					{
 						int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
 						if(count < 20)
@@ -234,25 +280,8 @@ public final class ListenerFunction implements Listener
 							count += 15;
 							if(count > 20)
 								count = 20;
-							player.sendMessage("Quenched thirst!");
+							player.sendMessage("Thirst Quenched.");
 							PlayerData.set("data."+player.getUniqueId()+".thirst", count);
-							plugin.saveYamls(PlayerDataFile, PlayerData);
-						}
-					}
-				}
-				if(player.getItemInHand().getType() == Material.POTION)
-				{
-					if(player.getItemInHand().getDurability() == 0)
-					{
-						int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
-						if(count < 20)
-						{
-							count += 15;
-							if(count > 20)
-								count = 20;
-							player.sendMessage("Quenched thirst!");
-							PlayerData.set("data."+player.getUniqueId()+".thirst", count);
-							player.getItemInHand().setType(Material.GLASS_BOTTLE);
 							plugin.saveYamls(PlayerDataFile, PlayerData);
 						}
 					}

@@ -49,7 +49,7 @@ public class gtake implements CommandExecutor{
 				for(Block b : lineOfSight)
 				{
 					
-					if(b.getType() == Material.SIGN || b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN)
+					if(b.getType() == Material.OAK_SIGN || b.getType() == Material.OAK_HANGING_SIGN || b.getType() == Material.OAK_WALL_HANGING_SIGN || b.getType() == Material.OAK_WALL_SIGN)
 					{
 						if(b.hasMetadata("isAtm"))
 						{
@@ -79,17 +79,17 @@ public class gtake implements CommandExecutor{
 					int quarried=Integer.parseInt(args[0]);
 					if(quarried < 0)
 					{
-						player.sendMessage("§cInvalid amount!");
+						player.sendMessage("Â§cInvalid amount!");
 						return false;
 					}
 					int amount=0;
 					if(plugin.getConfig().getBoolean("useVault") == true)
-						amount = (int) plugin.econ.getBalance(player);
+						amount = (int) MainClass.econ.getBalance(player);
 					else
 						amount = PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
 					if(quarried <= amount)
 					{
-						ItemStack inven = new ItemStack(Material.getMaterial(plugin.getConfig().getString("MoneyID")), quarried, (short)1);
+						ItemStack inven = new ItemStack(Material.getMaterial(plugin.getConfig().getString("MoneyID")), quarried);
 						final Inventory inventory = player.getInventory();
 						HashMap<Integer, ItemStack> hash = inventory.addItem(inven);
 						ItemStack itemsLeft;
@@ -97,14 +97,14 @@ public class gtake implements CommandExecutor{
 						if(itemsLeft != null)
 						{
 							quarried -= itemsLeft.getAmount();
-							player.sendMessage("§4Not enough room in inventory. Only stored "+itemsLeft.getAmount()+config.getString("MoneyUnit"));
+							player.sendMessage("Â§4Not enough room in inventory. Only stored "+itemsLeft.getAmount()+config.getString("MoneyUnit"));
 						}
 						if(plugin.getConfig().getBoolean("useVault")==true)
 						{
-							plugin.econ.withdrawPlayer(player, quarried);
+							MainClass.econ.withdrawPlayer(player, quarried);
 							if(plugin.nodeExists(PlayerData, "data."+player.getUniqueId()+".nuggets"))
 							{
-								PlayerData.set("data."+player.getUniqueId()+".nuggets", plugin.econ.getBalance(player));
+								PlayerData.set("data."+player.getUniqueId()+".nuggets", MainClass.econ.getBalance(player));
 								try {
 									PlayerData.save(PlayerDataFile);
 								} catch (IOException e) {
@@ -120,15 +120,15 @@ public class gtake implements CommandExecutor{
 								e.printStackTrace();
 							}
 						}
-						player.sendMessage("§2Withdrew "+quarried+plugin.getConfig().getString("MoneyUnit"));
+						player.sendMessage("Â§2Withdrew "+quarried+plugin.getConfig().getString("MoneyUnit"));
 					} else 
 					{
-						player.sendMessage("§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" in the bank to withdraw!");
+						player.sendMessage("Â§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" in the bank to withdraw!");
 					}
 					
 				}else
 				{
-					player.sendMessage("§cYou are not at an ATM");
+					player.sendMessage("Â§cYou are not at an ATM");
 				}
 			}
 			

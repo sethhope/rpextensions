@@ -15,7 +15,7 @@ public class ItemNameCheck extends BukkitRunnable{
 	{
 		this.plugin = plugin;
 	}
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Override
 	public void run() {
 		for(Player player : plugin.getServer().getOnlinePlayers())
@@ -26,7 +26,7 @@ public class ItemNameCheck extends BukkitRunnable{
 			{
 				if(inven != null)
 				{
-					if(inven.getType().equals(Material.getMaterial(plugin.getConfig().getInt("MoneyID"))))
+					if(inven.getType().equals(Material.getMaterial(plugin.getConfig().getString("MoneyID"))))
 					{
 						ItemMeta meta = inven.getItemMeta();
 						meta.setDisplayName(plugin.getConfig().getString("MoneyName"));

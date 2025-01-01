@@ -25,7 +25,7 @@ public class gset implements CommandExecutor{
 	{
 		this.plugin = plugin;
 	}
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
@@ -50,7 +50,7 @@ public class gset implements CommandExecutor{
 				}
 				if(target == null)
 				{
-					player.sendMessage("§cPlayer is not online");
+					player.sendMessage("Â§cPlayer is not online");
 					return false;
 				}
 				PlayerData = plugin.getPlayerData();
@@ -58,8 +58,7 @@ public class gset implements CommandExecutor{
 				boolean allow = false;
 				for(Block b : lineOfSight)
 				{
-					
-					if(b.getType() == Material.SIGN || b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN)
+					if(b.getType() == Material.OAK_SIGN || b.getType() == Material.OAK_HANGING_SIGN || b.getType() == Material.OAK_WALL_HANGING_SIGN || b.getType() == Material.OAK_WALL_SIGN)
 					{
 						if(b.hasMetadata("isAtm"))
 						{
@@ -88,25 +87,24 @@ public class gset implements CommandExecutor{
 				{
 					if(quarried < 0)
 					{
-						player.sendMessage("§cInvalid amount of money");
+						player.sendMessage("Â§cInvalid amount of money");
 						return false;
 					}
-					int amount=0;
 					int  targetAmount = 0;
 					targetAmount = quarried;
 					PlayerData.set("data."+target.getUniqueId()+".nuggets", targetAmount);
 					if(plugin.getConfig().getBoolean("useVault")==true)
 					{
-						double curA = plugin.econ.getBalance(target);
-						plugin.econ.withdrawPlayer(target, curA);
-						plugin.econ.depositPlayer(target, targetAmount);
+						double curA = MainClass.econ.getBalance(target);
+						MainClass.econ.withdrawPlayer(target, curA);
+						MainClass.econ.depositPlayer(target, targetAmount);
 					}
-					player.sendMessage("§2Set "+target.getDisplayName()+"§2's account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
-					target.sendMessage(player.getDisplayName()+" §2has set your account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
+					player.sendMessage("Â§2Set "+target.getDisplayName()+"Â§2's account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
+					target.sendMessage(player.getDisplayName()+" Â§2has set your account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
 					
 				}else
 				{
-					player.sendMessage("§cYou are not at an ATM");
+					player.sendMessage("Â§cYou are not at an ATM");
 					return false;
 				}
 			}

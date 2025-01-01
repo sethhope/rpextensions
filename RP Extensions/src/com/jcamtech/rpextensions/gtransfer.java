@@ -25,7 +25,7 @@ public class gtransfer implements CommandExecutor{
 	{
 		this.plugin = plugin;
 	}
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
@@ -50,7 +50,7 @@ public class gtransfer implements CommandExecutor{
 				}
 				if(target == null)
 				{
-					player.sendMessage("§cPlayer is not online");
+					player.sendMessage("Â§cPlayer is not online");
 					return false;
 				}
 				PlayerData = plugin.getPlayerData();
@@ -59,7 +59,7 @@ public class gtransfer implements CommandExecutor{
 				for(Block b : lineOfSight)
 				{
 					
-					if(b.getType() == Material.SIGN || b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN)
+					if(b.getType() == Material.OAK_SIGN || b.getType() == Material.OAK_HANGING_SIGN || b.getType() == Material.OAK_WALL_HANGING_SIGN || b.getType() == Material.OAK_WALL_SIGN)
 					{
 						if(b.hasMetadata("isAtm"))
 						{
@@ -88,15 +88,15 @@ public class gtransfer implements CommandExecutor{
 				{
 					if(quarried < 0)
 					{
-						player.sendMessage("§cInvalid amount of money");
+						player.sendMessage("Â§cInvalid amount of money");
 						return false;
 					}
 					int amount=0;
 					int  targetAmount = 0;
 					if(plugin.getConfig().getBoolean("useVault")==true)
 					{
-						targetAmount = (int) plugin.econ.getBalance(target);
-						amount = (int) plugin.econ.getBalance(player);
+						targetAmount = (int) MainClass.econ.getBalance(target);
+						amount = (int) MainClass.econ.getBalance(player);
 					}
 					targetAmount = PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
 					amount = PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
@@ -104,25 +104,25 @@ public class gtransfer implements CommandExecutor{
 					{
 						if(plugin.getConfig().getBoolean("useVault")==true)
 						{
-							plugin.econ.withdrawPlayer(player, quarried);
-							plugin.econ.depositPlayer(target, quarried);
+							MainClass.econ.withdrawPlayer(player, quarried);
+							MainClass.econ.depositPlayer(target, quarried);
 						}
 						amount = amount - quarried;
 						targetAmount = targetAmount + quarried;
 						PlayerData.set("data."+player.getUniqueId()+".nuggets", amount);
 						PlayerData.set("data."+target.getUniqueId()+".nuggets", targetAmount);
-						player.sendMessage("§2Transferred "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
-						target.sendMessage(player.getDisplayName()+" §2has sent you "+quarried+plugin.getConfig().getString("MoneyUnit"));
+						player.sendMessage("Â§2Transferred "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
+						target.sendMessage(player.getDisplayName()+" Â§2has sent you "+quarried+plugin.getConfig().getString("MoneyUnit"));
 						
 					}else
 					{
-						player.sendMessage("§cNot enough money in your account!");
+						player.sendMessage("Â§cNot enough money in your account!");
 						return false;
 					}
 					
 				}else
 				{
-					player.sendMessage("§cYou are not at an ATM");
+					player.sendMessage("Â§cYou are not at an ATM");
 					return false;
 				}
 			}

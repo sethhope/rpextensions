@@ -18,7 +18,7 @@ public class check implements CommandExecutor{
 	{
 		this.plugin = plugin;
 	}
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
@@ -37,18 +37,20 @@ public class check implements CommandExecutor{
 				String name = PlayerData.getString("data." + target.getUniqueId() + ".name");
 				int nugs = (int) PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
 				if(plugin.getConfig().getBoolean("useVault")==true)
-					nugs = (int) plugin.econ.getBalance(target);
+				{
+					nugs = (int) MainClass.econ.getBalance(target);
+				}
 				int thirst = (int) PlayerData.getInt("data."+target.getUniqueId()+".thirst");
 				int sleepiness = PlayerData.getInt("data."+target.getUniqueId()+".tiredness");
 				String unit = plugin.getConfig().getString("MoneyUnit");
-				player.sendMessage("§4------TARGET--STATS------");
-				player.sendMessage("§fUUID: §9"+target.getUniqueId());
-				player.sendMessage("§fName: §9" + name + "§f|Thirst: §9"+thirst);
+				player.sendMessage("Â§4------TARGET--STATS------");
+				player.sendMessage("Â§fUUID: Â§9"+target.getUniqueId());
+				player.sendMessage("Â§fName: Â§9" + name + "Â§f|Thirst: Â§9"+thirst);
 				if(plugin.getConfig().getBoolean("UseSleep"))
-					player.sendMessage("§fSleepiness: §9"+sleepiness);
+					player.sendMessage("Â§fSleepiness: Â§9"+sleepiness);
 				if(plugin.getConfig().getBoolean("UseGoldNuggetBank")==true)
-					player.sendMessage("§fMoney: §9" + nugs + unit);
-				player.sendMessage("§4-------------------------");
+					player.sendMessage("Â§fMoney: Â§9" + nugs + unit);
+				player.sendMessage("Â§4-------------------------");
 			}
 			
 			return true;

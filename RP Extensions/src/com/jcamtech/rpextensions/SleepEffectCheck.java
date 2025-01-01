@@ -22,26 +22,26 @@ public class SleepEffectCheck extends BukkitRunnable{
 				int sleepiness = plugin.PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
 				if(sleepiness <= 5)
 				{
-					if(player.hasPotionEffect(PotionEffectType.SLOW))
+					if(player.hasPotionEffect(PotionEffectType.SLOWNESS))
 					{
-						player.removePotionEffect(PotionEffectType.SLOW);
-						player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 2));
+						player.removePotionEffect(PotionEffectType.SLOWNESS);
+						player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 200, 2));
 					}
 					else
 					{
-						player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 2));
+						player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 200, 2));
 					}
 				}
 				if(sleepiness <= 3)
 				{
-					if(player.hasPotionEffect(PotionEffectType.CONFUSION))
+					if(player.hasPotionEffect(PotionEffectType.NAUSEA))
 					{
-						player.removePotionEffect(PotionEffectType.CONFUSION);
-						player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0));
+						player.removePotionEffect(PotionEffectType.NAUSEA);
+						player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 0));
 					}
 					else
 					{
-						player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0));
+						player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 0));
 					}
 				}
 				if(sleepiness <= 1)
