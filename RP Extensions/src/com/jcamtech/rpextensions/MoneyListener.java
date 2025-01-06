@@ -11,12 +11,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -77,7 +79,31 @@ public class MoneyListener implements Listener
 			}
 		}
 	}
-	
+	@EventHandler
+	public void onInteract(PlayerInteractEvent event)
+	{
+		Player player = event.getPlayer();
+		if(event.getAction() == Action.LEFT_CLICK_BLOCK)
+		{
+			if(event.getClickedBlock().hasMetadata("isAtm"))
+			{
+				if(!player.hasPermission("rpext.createatm"))
+				{
+					player.sendMessage("You do not have permission to break this ATM!");
+					event.setCancelled(true);
+					return;
+				}
+			}
+		}
+		if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
+		{
+			if(event.getClickedBlock().hasMetadata("isAtm"))
+			{
+				player.sendMessage("You may not edit an ATM");
+				event.setCancelled(true);
+			}
+		}
+	}
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onBlockBreak(BlockBreakEvent evnt)
 	{
@@ -92,7 +118,6 @@ public class MoneyListener implements Listener
 				return;
 			}
 			block.removeMetadata("isAtm", plugin);
-			player.sendMessage("Breaking ATM");
 			FileConfiguration PlayerData = plugin.getPlayerData();
 			File PlayerDataFile = plugin.getPlayerFile();
 			ConfigurationSection atms = PlayerData.getConfigurationSection("atms");
@@ -100,7 +125,7 @@ public class MoneyListener implements Listener
 			{
 				if(block.getX() == atms.getInt(sAtms+".x") && block.getY() == atms.getInt(sAtms+".y") && block.getZ() == atms.getInt(sAtms+".z"))
 				{
-					player.sendMessage("Deleting "+sAtms);
+					player.sendMessage("ATM Removed!");
 					PlayerData.set("atms."+sAtms+".x", null);
 					PlayerData.set("atms."+sAtms+".y", null);
 					PlayerData.set("atms."+sAtms+".z", null);

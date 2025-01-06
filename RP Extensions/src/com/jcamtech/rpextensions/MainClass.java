@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,6 +23,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.google.common.io.Files;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -46,6 +49,10 @@ public class MainClass extends JavaPlugin {
 	public void onEnable()//on enable
 	{	
 		getServer().getPluginManager().registerEvents(new MainListener(this), this);
+		getLogger().info("░█▀▄░█▀█░░░█▀▀░█░█░▀█▀░█▀▀░█▀█░█▀▀░▀█▀░█▀█░█▀█░█▀▀");
+		getLogger().info("░█▀▄░█▀▀░░░█▀▀░▄▀▄░░█░░█▀▀░█░█░▀▀█░░█░░█░█░█░█░▀▀█");
+		getLogger().info("░▀░▀░▀░░░░░▀▀▀░▀░▀░░▀░░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀ ");
+		getLogger().info("                     By: sethhope");
 		getLogger().info("loading files");//BEGIN File LOADING
 		configFile = new File(getDataFolder(), "config.yml");
 		PlayerDataFile = new File(getDataFolder(), "PlayerData.yml");
@@ -59,12 +66,37 @@ public class MainClass extends JavaPlugin {
 		config = new YamlConfiguration();
 		PlayerData = new YamlConfiguration();
 		loadYamls(configFile, config);
+		File configRefFile;
+		try {
+			configRefFile = File.createTempFile("tmpcfg", "cfg");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		FileConfiguration configRef = new YamlConfiguration();
+		copyStream(getResource("config.yml"), configRefFile);
+		loadYamls(configRefFile, configRef);
+		if(!compareConfigs(configRef, config))
+		{
+			getLogger().severe("Config file didn't match! Replacing with default. Please verify your config settings!");
+			File configBakFile = new File(getDataFolder(), "config_bak.yml");
+			try {
+				Files.copy(configFile, configBakFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
+			getLogger().warning("Copying old config to config_bak.yml");
+			copyStream(getResource("config.yml"), configFile);
+			loadYamls(configFile, config);
+		}
+		configRefFile.delete();
 		loadYamls(PlayerDataFile, PlayerData);
 		getLogger().info("successfully loaded files");//END CONFIG LOADING
 		if(!PlayerDataFile.exists())
 		{
 			PlayerDataFile.getParentFile().mkdirs();
-			copy(getResource("PlayerData.yml"), PlayerDataFile);
+			copyStream(getResource("PlayerData.yml"), PlayerDataFile);
 		}
 		debugMode = config.getBoolean("DebugMode");
 		getCommand("stats").setExecutor(new stats(this));
@@ -196,11 +228,11 @@ public class MainClass extends JavaPlugin {
 		if(!configFile.exists())
 		{
 			configFile.getParentFile().mkdirs();
-			copy(getResource("config.yml"), configFile);
+			copyStream(getResource("config.yml"), configFile);
 		}
 	}
 	
-	private void copy(InputStream in, File file) {
+	private void copyStream(InputStream in, File file) {
 		try
 		{
 			OutputStream out = new FileOutputStream(file);
@@ -261,6 +293,19 @@ public class MainClass extends JavaPlugin {
 	{
 		String node = config.getString(path);
 		return(node!=null);
+	}
+	
+	public boolean compareConfigs(FileConfiguration cRoot, FileConfiguration c1)
+	{
+		Set<String> keys = cRoot.getKeys(true);
+		for(String k : keys)
+		{
+			if(!c1.contains(k))
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 	public void updateStatMonitor(Player player)
 	{
