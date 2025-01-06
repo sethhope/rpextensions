@@ -28,7 +28,6 @@ public class stats implements CommandExecutor{
 			} else {
 				Player player = (Player) sender;
 				PlayerData = plugin.getPlayerData();
-				String name = PlayerData.getString("data." + player.getUniqueId() + ".name");
 				int nugs = (int) PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
 				if(plugin.getConfig().getBoolean("useVault")==true)
 					nugs = (int) MainClass.econ.getBalance(player);
@@ -36,8 +35,8 @@ public class stats implements CommandExecutor{
 				int sleepiness = PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
 				String unit = plugin.getConfig().getString("MoneyUnit");
 				player.sendMessage("§4----------STATS----------");
-				player.sendMessage("§fUUID: §9"+player.getUniqueId());
-				player.sendMessage("§fName: §9" + name + "§f|Thirst: §9"+thirst);
+				if(plugin.getConfig().getBoolean("UseThirst"))
+					player.sendMessage("§fThirst: §9"+thirst);
 				if(plugin.getConfig().getBoolean("UseSleep"))
 					player.sendMessage("§fSleepiness: §9"+sleepiness);
 				if(plugin.getConfig().getBoolean("UseGoldNuggetBank")==true)

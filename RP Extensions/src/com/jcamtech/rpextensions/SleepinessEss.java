@@ -39,17 +39,18 @@ public class SleepinessEss extends BukkitRunnable{
 			}
 		}
 		int sleepiness = plugin.PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
+		plugin.updateStatMonitor(player);
 		if(sleepiness > 0 && player.getGameMode() != GameMode.CREATIVE && isAFK == false && !player.isDead())
 		{
 			sleepiness--;
 			if(plugin.debugMode)
 				plugin.getLogger().info("Setting sleepiness for: " + player.getDisplayName() +" to: " + sleepiness);
 		}
-		if(sleepiness == 5)
+		if(sleepiness == 8)
 		{
 			player.sendMessage("You are feeling tired");
 		}
-		if(sleepiness == 3)
+		if(sleepiness == 5)
 		{
 			player.sendMessage("You are getting sleepy...");
 		}

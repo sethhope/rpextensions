@@ -20,17 +20,27 @@ public class ArrowDespawnCheck extends BukkitRunnable{
 	}
 	@Override
 	public void run() {
+		if(arrow == null)
+		{
+			if(plugin.debugMode == true)
+				plugin.getLogger().info("Chair is null");
+			cancel();
+		}
 		if(player.isInsideVehicle())
 		{
 			arrow.setTicksLived(5);
 		}
 		else
 		{
+			if(plugin.debugMode == true)
+				plugin.getLogger().info("Removing chair: Player isn't inside vehicle");
 			arrow.remove();
 			cancel();
 		}
 		if(!plugin.playerMap.containsValue(arrow))
 		{
+			if(plugin.debugMode == true)
+				plugin.getLogger().info("Removing chair: Playermap doesn't contain arrow");
 			arrow.remove();
 			cancel();
 		}

@@ -24,7 +24,10 @@ public class ChairCheck extends BukkitRunnable{
 					
 					if(isSeated)
 					{
-						plugin.isSitting.remove(player);
+						if(plugin.isSitting.containsKey(player))
+						{
+							plugin.isSitting.remove(player);
+						}
 						if(plugin.playerMap.containsKey(player))
 						{
 							plugin.playerMap.get(player).remove();

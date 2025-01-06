@@ -33,7 +33,7 @@ public class ThirstDeath extends BukkitRunnable{
 			cancel();
 		}else
 		{
-			player.damage(1);
+			player.damage(2);
 		}
 	}
 }

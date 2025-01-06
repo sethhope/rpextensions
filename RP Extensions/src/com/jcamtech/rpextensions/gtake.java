@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public class gtake implements CommandExecutor{
@@ -90,6 +91,12 @@ public class gtake implements CommandExecutor{
 					if(quarried <= amount)
 					{
 						ItemStack inven = new ItemStack(Material.getMaterial(plugin.getConfig().getString("MoneyID")), quarried);
+						if(plugin.getConfig().getBoolean("RenameMoney"));
+						{
+							ItemMeta meta = inven.getItemMeta();
+							meta.setDisplayName(plugin.getConfig().getString("MoneyName"));
+							inven.setItemMeta(meta);
+						}
 						final Inventory inventory = player.getInventory();
 						HashMap<Integer, ItemStack> hash = inventory.addItem(inven);
 						ItemStack itemsLeft;

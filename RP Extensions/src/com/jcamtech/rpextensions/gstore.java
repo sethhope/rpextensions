@@ -145,7 +145,47 @@ public class gstore implements CommandExecutor{
 						}
 					}else
 					{
-						player.sendMessage("§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" to store");
+						//player.sendMessage("§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" to store");
+						InventoryUtil.removeInventoryItems(i, Material.getMaterial(plugin.getConfig().getString("MoneyID")), amount);
+						player.sendMessage("§2Stored "+amount+plugin.getConfig().getString("MoneyUnit"));
+						if(plugin.getConfig().getBoolean("useVault")==true)
+						{
+							MainClass.econ.depositPlayer(player, amount);
+							if(plugin.nodeExists(PlayerData, "data."+player.getUniqueId()+".nuggets"))
+							{
+								PlayerData.set("data."+player.getUniqueId()+".nuggets", MainClass.econ.getBalance(player));
+								try {
+									PlayerData.save(PlayerDataFile);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							} else
+							{
+								if(amount > 0)
+								{
+									plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", MainClass.econ.getBalance(player));
+								}
+							}
+						}else
+						{
+							int nuggets=0;
+							if(plugin.nodeExists(PlayerData, "data."+player.getUniqueId()+".nuggets"))
+							{
+								nuggets = (int)PlayerData.get("data."+player.getUniqueId()+".nuggets");
+								PlayerData.set("data."+player.getUniqueId()+".nuggets", nuggets+amount);
+								try {
+									PlayerData.save(PlayerDataFile);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							} else
+							{
+								if(amount > 0)
+								{
+									plugin.addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", stored);
+								}
+							}
+						}
 					}
 				}
 				else

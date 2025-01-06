@@ -21,6 +21,7 @@ public class Sleepiness extends BukkitRunnable{
 	@Override
 	public void run() {
 		int sleepiness = plugin.PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
+		plugin.updateStatMonitor(player);
 		if(sleepiness > 0 && player.getGameMode() != GameMode.CREATIVE && !player.isDead())
 		{
 			sleepiness--;

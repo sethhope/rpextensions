@@ -38,6 +38,7 @@ public class ThirstLoop extends BukkitRunnable
 			cancel();
 			return;
 		}
+		plugin.updateStatMonitor(player);
 		int count = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
 		if(player.getGameMode() != GameMode.CREATIVE && !player.isDead())
 		{

@@ -10,10 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -28,7 +33,9 @@ public class MainClass extends JavaPlugin {
 	File configFile;
 	File PlayerDataFile;
 	public HashMap<Player, Entity> playerMap;
+	public HashMap<Block, Entity> chairMap;
 	public HashMap<Player, Boolean> isSitting;
+	public HashMap<Player, Boolean> isCooldown;
 	FileConfiguration PlayerData;
 	FileConfiguration config;
 	
@@ -38,8 +45,7 @@ public class MainClass extends JavaPlugin {
 	
 	public void onEnable()//on enable
 	{	
-		getServer().getPluginManager().registerEvents(new ListenerFunction(this), this);
-		getCommand("quench").setExecutor(new quench(this));
+		getServer().getPluginManager().registerEvents(new MainListener(this), this);
 		getLogger().info("loading files");//BEGIN File LOADING
 		configFile = new File(getDataFolder(), "config.yml");
 		PlayerDataFile = new File(getDataFolder(), "PlayerData.yml");
@@ -62,23 +68,39 @@ public class MainClass extends JavaPlugin {
 		}
 		debugMode = config.getBoolean("DebugMode");
 		getCommand("stats").setExecutor(new stats(this));
-		getCommand("checkstats").setExecutor(new check(this));
+		getCommand("setstats").setExecutor(new SetStats(this));
+		if(config.getBoolean("UseStatMonitor"))
+		{
+			getServer().getPluginManager().registerEvents(new StatMonitorListener(this), this);
+			getCommand("checkstats").setExecutor(new check(this));
+		}
+		getCommand("statmonitor").setExecutor(new statMonitor(this));
 		if(config.getBoolean("UseGoldNuggetBank") == true)
 		{
-			if(config.getBoolean("RenameMoney") == true)
-			{
-				ItemNameCheck itemCheck = new ItemNameCheck(this);
-				itemCheck.runTaskTimerAsynchronously(this, 10, 20);
-			}
-			
 			getCommand("gstore").setExecutor(new gstore(this));
 			getCommand("gtake").setExecutor(new gtake(this));
 			getCommand("gtransfer").setExecutor(new gtransfer(this));
-			//getCommand("ggive").setExecutor(new givemoney(this));
 			getCommand("gset").setExecutor(new gset(this));
 		}
-		playerMap = new HashMap<Player, Entity>();
-		isSitting = new HashMap<Player, Boolean>();
+		if(config.getBoolean("UseChairs"))
+		{
+			playerMap = new HashMap<Player, Entity>();
+			chairMap = new HashMap<Block, Entity>();
+			isSitting = new HashMap<Player, Boolean>();
+			isCooldown = new HashMap<Player, Boolean>();
+			getServer().getPluginManager().registerEvents(new ChairListener(this), this);
+		}
+		
+		if(config.getBoolean("UseThirst"))
+		{
+			getServer().getPluginManager().registerEvents(new ThirstListener(this), this);
+			getCommand("quench").setExecutor(new quench(this));
+		}
+		if(config.getBoolean("UseSleep"))
+		{
+			getServer().getPluginManager().registerEvents(new SleepListener(this), this);
+			getCommand("sleep").setExecutor(new Sleep(this));
+		}
 		for(Player player : this.getServer().getOnlinePlayers())
 		{
 			if(debugMode)
@@ -87,60 +109,22 @@ public class MainClass extends JavaPlugin {
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".nuggets", 0);
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".thirst", 20);
 			addVariable(PlayerDataFile, PlayerData, "data."+player.getUniqueId()+".tiredness", 20);
-			if(config.getBoolean("UseThirst"))
-			{	
-				if(config.getBoolean("useEssentials"))
-				{
-					BukkitRunnable thirstloop = new ThirstLoopEss(this, player);
-					thirstloop.runTaskTimer(this,  config.getInt("ThirstTime"), config.getInt("ThirstTime"));
-				}
-				else
-				{
-					BukkitRunnable thirstloop = new ThirstLoop(this, player);
-					thirstloop.runTaskTimer(this,  config.getInt("ThirstTime"), config.getInt("ThirstTime"));
-				}
-			}
-			if(config.getBoolean("UseSleep"))
-			{
-				if(config.getBoolean("useEssentials"))
-				{
-					BukkitRunnable tiredLoop = new SleepinessEss(this, player);
-					tiredLoop.runTaskTimer(this, config.getInt("SleepTime"), config.getInt("SleepTime"));
-				}
-				else
-				{
-					BukkitRunnable tiredLoop = new Sleepiness(this, player);
-					tiredLoop.runTaskTimer(this, config.getInt("SleepTime"), config.getInt("SleepTime"));
-				}
-				getCommand("sleep").setExecutor(new Sleep(this));
-				BukkitRunnable effectLoop = new SleepEffectCheck(this);
-				effectLoop.runTaskTimer(this, 60, 60);
-			}
 		}
 		if(config.getBoolean("UseGoldNuggetBank"))
 		{
-			if(config.getBoolean("UseInterest"))
-			{
-				BukkitRunnable payday = new PayDay(this);
-				payday.runTaskTimer(this, config.getInt("InterestTime"), config.getInt("InterestTime"));
-			}
-			if(config.getBoolean("useVault"))
-			{
-				if(!setupEconomy())
-				{
-					this.getLogger().severe("Failed to load! Could not initialize vault! (try disabling useVault in config.yml");
-					this.getServer().getPluginManager().disablePlugin(this);
-					return;
-				}
-				setupPermissions();
-		        setupChat();
-		        BukkitRunnable roundMoney = new MoneyRoundCheck(this);
-		        roundMoney.runTaskTimer(this, 10, 20);
-		        getCommand("convertEcon").setExecutor(new convertEcon(this));
-			}
+			getServer().getPluginManager().registerEvents(new MoneyListener(this), this);
 		}
-		BukkitRunnable check = new ChairCheck(this);
-		check.runTaskTimer(this, 20, 50);
+		if(config.getBoolean("UseVault"))
+		{
+			if(config.getBoolean("UseGoldNuggetBank"))
+			{
+				getCommand("convertEcon").setExecutor(new convertEcon(this));
+			}
+			setupPermissions();
+	        setupChat();
+		}
+		BukkitRunnable cooldown = new Cooldown(this);
+		cooldown.runTaskTimer(this, 600, 600);
 		getLogger().info("Finished initialization!");
 		
 	}
@@ -176,9 +160,9 @@ public class MainClass extends JavaPlugin {
 		}
 		isSitting.clear();
 		playerMap.clear();
-		getLogger().info("Contega Stats Disabled");
+		getLogger().info("RP Extensions Disabled");
 	}
-	private boolean setupEconomy()
+	public boolean setupEconomy()
 	{
 		if(getServer().getPluginManager().getPlugin("Vault") == null)
 		{
@@ -277,6 +261,37 @@ public class MainClass extends JavaPlugin {
 	{
 		String node = config.getString(path);
 		return(node!=null);
+	}
+	public void updateStatMonitor(Player player)
+	{
+		if(config.getBoolean("UseStatMonitor") == false)
+		{
+			return;
+		}
+		PlayerInventory i = player.getInventory();
+		ItemStack[] inv = i.getContents();
+		for(ItemStack inven : inv)
+		{
+			int thirst = 0;
+			int sleep = 0;
+			if(inven != null)
+			{
+				if(inven.getType() == Material.getMaterial(config.getString("StatMonitorID")))
+				{
+					if(inven.getItemMeta().getDisplayName().contains("Sleepiness:"))
+					{
+						if(nodeExists(PlayerData, "data."+player.getUniqueId()+".thirst") && nodeExists(PlayerData, "data."+player.getUniqueId()+".tiredness"))
+						{
+							thirst = PlayerData.getInt("data."+player.getUniqueId()+".thirst");
+							sleep = PlayerData.getInt("data." + player.getUniqueId()+".tiredness");
+							ItemMeta meta = inven.getItemMeta();
+							meta.setDisplayName("Sleepiness: "+sleep+" | Thirst: "+thirst);
+							inven.setItemMeta(meta);
+						}
+					}
+				}
+			}
+		}
 	}
 }
 

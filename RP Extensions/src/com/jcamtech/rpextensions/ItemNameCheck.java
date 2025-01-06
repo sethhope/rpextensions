@@ -20,6 +20,7 @@ public class ItemNameCheck extends BukkitRunnable{
 	public void run() {
 		for(Player player : plugin.getServer().getOnlinePlayers())
 		{
+			plugin.updateStatMonitor(player);
 			Inventory i = player.getInventory();
 			ItemStack[] inv = i.getContents();
 			for(ItemStack inven : inv)

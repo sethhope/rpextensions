@@ -18,7 +18,6 @@ public class check implements CommandExecutor{
 	{
 		this.plugin = plugin;
 	}
-	//@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
@@ -26,13 +25,41 @@ public class check implements CommandExecutor{
 		{
 			if(!(sender instanceof Player))
 			{
-				sender.sendMessage("This command can only be run in game");
+				Player target = (Bukkit.getServer().getPlayer(args[0]));
+				if(target == null)
+				{
+					sender.sendMessage("Player is not online!");
+					return true;
+				}
+				PlayerData = plugin.getPlayerData();
+				String name = PlayerData.getString("data." + target.getUniqueId() + ".name");
+				int nugs = (int) PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
+				if(plugin.getConfig().getBoolean("useVault")==true)
+				{
+					nugs = (int) MainClass.econ.getBalance(target);
+				}
+				int thirst = (int) PlayerData.getInt("data."+target.getUniqueId()+".thirst");
+				int sleepiness = PlayerData.getInt("data."+target.getUniqueId()+".tiredness");
+				String unit = plugin.getConfig().getString("MoneyUnit");
+				sender.sendMessage("------TARGET--STATS------");
+				sender.sendMessage("UUID: "+target.getUniqueId());
+				sender.sendMessage("Name: " + name + "|Thirst: "+thirst);
+				if(plugin.getConfig().getBoolean("UseSleep"))
+					sender.sendMessage("Sleepiness: "+sleepiness);
+				if(plugin.getConfig().getBoolean("UseGoldNuggetBank")==true)
+					sender.sendMessage("Money: " + nugs + unit);
+				sender.sendMessage("-------------------------");
 			} else if(args.length != 1)
 			{
 				sender.sendMessage("Usage: /checkstats [player]");
 			} else {
 				Player player = (Player) sender;
 				Player target = (Bukkit.getServer().getPlayer(args[0]));
+				if(target == null)
+				{
+					sender.sendMessage("Player is not online!");
+					return true;
+				}
 				PlayerData = plugin.getPlayerData();
 				String name = PlayerData.getString("data." + target.getUniqueId() + ".name");
 				int nugs = (int) PlayerData.getInt("data."+target.getUniqueId()+".nuggets");
