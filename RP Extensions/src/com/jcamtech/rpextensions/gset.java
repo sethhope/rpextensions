@@ -24,6 +24,7 @@ public class gset implements CommandExecutor{
 	public gset(MainClass plugin)
 	{
 		this.plugin = plugin;
+		this.config = plugin.getConfig();
 	}
 	//@SuppressWarnings("deprecation")
 	@Override
@@ -99,8 +100,16 @@ public class gset implements CommandExecutor{
 						MainClass.econ.withdrawPlayer(target, curA);
 						MainClass.econ.depositPlayer(target, targetAmount);
 					}
-					player.sendMessage("§2Set "+target.getDisplayName()+"§2's account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
-					target.sendMessage(player.getDisplayName()+" §2has set your account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
+					if(plugin.getConfig().getBoolean("PrefixUnit"))
+					{
+						player.sendMessage("§2Set "+target.getDisplayName()+"§2's account to "+plugin.getConfig().getString("MoneyUnit")+quarried);
+						target.sendMessage(player.getDisplayName()+" §2has set your account to "+plugin.getConfig().getString("MoneyUnit")+quarried);
+					}
+					else
+					{
+						player.sendMessage("§2Set "+target.getDisplayName()+"§2's account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
+						target.sendMessage(player.getDisplayName()+" §2has set your account to "+quarried+plugin.getConfig().getString("MoneyUnit"));
+					}
 					
 				}else
 				{

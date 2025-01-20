@@ -150,7 +150,7 @@ public class MoneyListener implements Listener
 			if(event.getItem().getItemStack().getType() == Material.getMaterial(config.getString("MoneyID")))
 			{
 				ItemMeta meta = event.getItem().getItemStack().getItemMeta();
-				meta.setDisplayName(config.getString("MoneyName"));
+				meta.setDisplayName(plugin.basicParse(config.getString("MoneyName")));
 				event.getItem().getItemStack().setItemMeta(meta);
 			}
 		}
@@ -185,7 +185,7 @@ public class MoneyListener implements Listener
 		if(event.getCurrentItem().getType() == Material.getMaterial(config.getString("MoneyID")))
 		{
 			ItemMeta meta = event.getCurrentItem().getItemMeta();
-			meta.setDisplayName(config.getString("MoneyName"));
+			meta.setDisplayName(plugin.basicParse(config.getString("MoneyName")));
 			event.getCursor().setItemMeta(meta);
 			event.getCurrentItem().setItemMeta(meta);
 		}
@@ -206,7 +206,7 @@ public class MoneyListener implements Listener
 		if(event.getRecipe().getResult().getType() == Material.getMaterial(config.getString("MoneyID")))
 		{
 			ItemMeta meta = event.getRecipe().getResult().getItemMeta();
-			meta.setDisplayName(config.getString("MoneyName"));
+			meta.setDisplayName(plugin.basicParse(config.getString("MoneyName")));
 			event.getInventory().getResult().setItemMeta(meta);
 		}
 	}

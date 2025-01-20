@@ -24,6 +24,7 @@ public class givemoney implements CommandExecutor{
 	public givemoney(MainClass plugin)
 	{
 		this.plugin = plugin;
+		this.config = plugin.getConfig();
 	}
 	//@SuppressWarnings("deprecation")
 	@Override
@@ -105,8 +106,16 @@ public class givemoney implements CommandExecutor{
 						MainClass.econ.withdrawPlayer(target, cura);
 						MainClass.econ.depositPlayer(target, targetAmount);
 					}
-					player.sendMessage("§2Gave "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
-					target.sendMessage(player.getDisplayName()+" §2has given you "+quarried+plugin.getConfig().getString("MoneyUnit"));
+					if(plugin.getConfig().getBoolean("PrefixUnit"))
+					{
+						player.sendMessage("§2Gave "+plugin.getConfig().getString("MoneyUnit")+quarried+" to "+target.getDisplayName());
+						target.sendMessage(player.getDisplayName()+" §2has given you "+plugin.getConfig().getString("MoneyUnit")+quarried);
+					}
+					else
+					{
+						player.sendMessage("§2Gave "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
+						target.sendMessage(player.getDisplayName()+" §2has given you "+quarried+plugin.getConfig().getString("MoneyUnit"));
+					}
 					
 				}else
 				{

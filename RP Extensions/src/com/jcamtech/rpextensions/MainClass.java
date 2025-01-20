@@ -338,5 +338,107 @@ public class MainClass extends JavaPlugin {
 			}
 		}
 	}
+	public String basicParse(String s)
+	{
+		String retString = "";
+		for(int i = 0; i < s.length(); i++)
+		{
+			char c = s.charAt(i);
+			if(c == '&')
+			{
+				c = '§';
+			}
+			retString = retString + c;
+		}
+		return retString;
+	}
+	public String parseMessage(Player p, String s)
+	{
+		if(p.isOnline() == false)
+		{
+			return "";
+		}
+		String retString = "";
+		Boolean inBracket = false;
+		String tmp = "";
+		for(int i = 0; i < s.length(); i++)
+		{
+			char c = s.charAt(i);
+			if(c == '&')
+			{
+				c = '§';
+			}
+			if(inBracket == false)
+			{
+				if(c == '{')
+				{
+					inBracket = true;
+				}
+				else
+				{
+					retString = retString + c;
+				}
+			}
+			else
+			{
+				if(c == '}')
+				{
+					inBracket = false;
+					String keyString = parseKey(p, tmp);
+					if(keyString == "")
+					{
+						retString = retString + "Invalid Keyword in Config";
+					}
+					else
+					{
+						retString = retString + keyString;
+					}
+					tmp = "";
+				}
+				else
+				{
+					tmp = tmp + c;
+				}
+			}
+		}
+		return retString;
+	}
+	public String parseKey(Player p, String s)
+	{
+		if(p.isOnline() == false)
+		{
+			return "";
+		}
+		String retString = "";
+		switch(s.toUpperCase())
+		{
+		case "PLAYER_NAME":
+			retString = p.getDisplayName();
+			break;
+		case "THIRST":
+			retString = getPlayerData().getString("data."+p.getUniqueId()+".thirst");
+			break;
+		case "SLEEPINESS":
+			retString = getPlayerData().getString("data."+p.getUniqueId()+".tiredness");
+			break;
+		case "MONEY":
+			if(getConfig().getBoolean("useVault"))
+			{
+				retString = retString + (int)(MainClass.econ.getBalance(p));
+			}
+			else
+			{
+				retString = retString + PlayerData.getInt("data."+p.getUniqueId()+".nuggets");
+			}
+			break;
+		case "UNIT":
+			retString = getConfig().getString("MoneyUnit");
+			break;
+		case "UUID":
+			retString = p.getUniqueId().toString();
+			break;
+		}
+		return retString;
+	}
 }
 

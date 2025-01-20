@@ -16,6 +16,7 @@ public class stats implements CommandExecutor{
 	public stats(MainClass plugin)
 	{
 		this.plugin = plugin;
+		this.config = plugin.getConfig();
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
@@ -28,25 +29,18 @@ public class stats implements CommandExecutor{
 			} else {
 				Player player = (Player) sender;
 				PlayerData = plugin.getPlayerData();
-				int nugs = (int) PlayerData.getInt("data."+player.getUniqueId()+".nuggets");
-				if(plugin.getConfig().getBoolean("useVault")==true)
-					nugs = (int) MainClass.econ.getBalance(player);
-				int thirst = (int) PlayerData.get("data."+player.getUniqueId()+".thirst");
-				int sleepiness = PlayerData.getInt("data."+player.getUniqueId()+".tiredness");
-				String unit = plugin.getConfig().getString("MoneyUnit");
-				player.sendMessage("§4----------STATS----------");
-				if(plugin.getConfig().getBoolean("UseThirst"))
-					player.sendMessage("§fThirst: §9"+thirst);
-				if(plugin.getConfig().getBoolean("UseSleep"))
-					player.sendMessage("§fSleepiness: §9"+sleepiness);
-				if(plugin.getConfig().getBoolean("UseGoldNuggetBank")==true)
-					player.sendMessage("§fMoney: §9" + nugs + unit);
-				player.sendMessage("§4-------------------------");
+				Object[] statMessage = config.getList("StatMessage").toArray();
+				for(Object line : statMessage)
+				{
+					String msg = plugin.parseMessage(player, line.toString());
+					player.sendMessage(msg);
+				}
 			}
 			
 			return true;
 		}
 		return false;
 	}
+	
 	
 }

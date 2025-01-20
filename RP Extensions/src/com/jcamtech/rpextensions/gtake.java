@@ -29,6 +29,7 @@ public class gtake implements CommandExecutor{
 	public gtake(MainClass plugin)
 	{
 		this.plugin = plugin;
+		this.config = plugin.getConfig();
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
@@ -94,7 +95,7 @@ public class gtake implements CommandExecutor{
 						if(plugin.getConfig().getBoolean("RenameMoney"));
 						{
 							ItemMeta meta = inven.getItemMeta();
-							meta.setDisplayName(plugin.getConfig().getString("MoneyName"));
+							meta.setDisplayName(plugin.basicParse(plugin.getConfig().getString("MoneyName")));
 							inven.setItemMeta(meta);
 						}
 						final Inventory inventory = player.getInventory();
@@ -104,7 +105,15 @@ public class gtake implements CommandExecutor{
 						if(itemsLeft != null)
 						{
 							quarried -= itemsLeft.getAmount();
-							player.sendMessage("§4Not enough room in inventory. Only stored "+itemsLeft.getAmount()+config.getString("MoneyUnit"));
+							if(plugin.getConfig().getBoolean("PrefixUnit"))
+							{
+								player.sendMessage("§4Not enough room in inventory. Only stored "+config.getString("MoneyUnit")+itemsLeft.getAmount());
+							}
+							else
+							{
+								player.sendMessage("§4Not enough room in inventory. Only stored "+itemsLeft.getAmount()+config.getString("MoneyUnit"));
+							}
+							
 						}
 						if(plugin.getConfig().getBoolean("useVault")==true)
 						{
@@ -127,10 +136,18 @@ public class gtake implements CommandExecutor{
 								e.printStackTrace();
 							}
 						}
-						player.sendMessage("§2Withdrew "+quarried+plugin.getConfig().getString("MoneyUnit"));
+						if(plugin.getConfig().getBoolean("PrefixUnit"))
+						{
+							player.sendMessage("§2Withdrew "+plugin.getConfig().getString("MoneyUnit")+quarried);
+						}
+						else
+						{
+							player.sendMessage("§2Withdrew "+quarried+plugin.getConfig().getString("MoneyUnit"));
+						}
+						
 					} else 
 					{
-						player.sendMessage("§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" in the bank to withdraw!");
+						player.sendMessage("§cNot enough "+plugin.basicParse(plugin.getConfig().getString("MoneyName"))+" in the bank to withdraw!");
 					}
 					
 				}else

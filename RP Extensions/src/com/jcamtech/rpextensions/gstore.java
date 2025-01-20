@@ -27,6 +27,7 @@ public class gstore implements CommandExecutor{
 	public gstore(MainClass plugin)
 	{
 		this.plugin = plugin;
+		this.config = plugin.getConfig();
 	}
 	//@SuppressWarnings("deprecation")
 	@Override
@@ -104,7 +105,14 @@ public class gstore implements CommandExecutor{
 					if(baseAmount <= amount)
 					{
 						InventoryUtil.removeInventoryItems(i, Material.getMaterial(plugin.getConfig().getString("MoneyID")), baseAmount);
-						player.sendMessage("§2Stored "+baseAmount+plugin.getConfig().getString("MoneyUnit"));
+						if(plugin.getConfig().getBoolean("PrefixUnit"))
+						{
+							player.sendMessage("§2Stored "+plugin.getConfig().getString("MoneyUnit")+baseAmount);
+						}
+						else
+						{
+							player.sendMessage("§2Stored "+baseAmount+plugin.getConfig().getString("MoneyUnit"));
+						}
 						if(plugin.getConfig().getBoolean("useVault")==true)
 						{
 							MainClass.econ.depositPlayer(player, baseAmount);
@@ -147,7 +155,15 @@ public class gstore implements CommandExecutor{
 					{
 						//player.sendMessage("§cNot enough "+plugin.getConfig().getString("MoneyUnit")+" to store");
 						InventoryUtil.removeInventoryItems(i, Material.getMaterial(plugin.getConfig().getString("MoneyID")), amount);
-						player.sendMessage("§2Stored "+amount+plugin.getConfig().getString("MoneyUnit"));
+						if(plugin.getConfig().getBoolean("PrefixUnit"))
+						{
+							player.sendMessage("§2Stored "+plugin.getConfig().getString("MoneyUnit")+amount);
+						}
+						else
+						{
+							player.sendMessage("§2Stored "+amount+plugin.getConfig().getString("MoneyUnit"));
+						}
+						
 						if(plugin.getConfig().getBoolean("useVault")==true)
 						{
 							MainClass.econ.depositPlayer(player, amount);

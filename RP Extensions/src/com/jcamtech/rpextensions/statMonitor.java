@@ -19,6 +19,7 @@ public class statMonitor implements CommandExecutor{
 	public statMonitor(MainClass plugin)
 	{
 		this.plugin = plugin;
+		this.config = plugin.getConfig();
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)

@@ -17,6 +17,7 @@ public class Sleep implements CommandExecutor{
 	public Sleep(MainClass plugin)
 	{
 		this.plugin = plugin;
+		this.config = plugin.getConfig();
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)

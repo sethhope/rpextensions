@@ -24,6 +24,7 @@ public class gtransfer implements CommandExecutor{
 	public gtransfer(MainClass plugin)
 	{
 		this.plugin = plugin;
+		this.config = plugin.getConfig();
 	}
 	//@SuppressWarnings("deprecation")
 	@Override
@@ -111,12 +112,21 @@ public class gtransfer implements CommandExecutor{
 						targetAmount = targetAmount + quarried;
 						PlayerData.set("data."+player.getUniqueId()+".nuggets", amount);
 						PlayerData.set("data."+target.getUniqueId()+".nuggets", targetAmount);
-						player.sendMessage("§2Transferred "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
-						target.sendMessage(player.getDisplayName()+" §2has sent you "+quarried+plugin.getConfig().getString("MoneyUnit"));
+						if(plugin.getConfig().getBoolean("PrefixUnit"))
+						{
+							player.sendMessage("§2Transferred "+plugin.getConfig().getString("MoneyUnit")+quarried+" to "+target.getDisplayName());
+							target.sendMessage(player.getDisplayName()+" §2has sent you "+plugin.getConfig().getString("MoneyUnit")+quarried);
+						}
+						else
+						{
+							player.sendMessage("§2Transferred "+quarried+plugin.getConfig().getString("MoneyUnit")+" to "+target.getDisplayName());
+							target.sendMessage(player.getDisplayName()+" §2has sent you "+quarried+plugin.getConfig().getString("MoneyUnit"));
+						}
+						
 						
 					}else
 					{
-						player.sendMessage("§cNot enough money in your account!");
+						player.sendMessage("§cNot enough "+plugin.basicParse(plugin.getConfig().getString("MoneyName"))+" in your account!");
 						return false;
 					}
 					

@@ -30,7 +30,7 @@ public class ItemNameCheck extends BukkitRunnable{
 					if(inven.getType() == Material.getMaterial(plugin.getConfig().getString("MoneyID")))
 					{
 						ItemMeta meta = inven.getItemMeta();
-						meta.setDisplayName(plugin.getConfig().getString("MoneyName"));
+						meta.setDisplayName(plugin.basicParse(plugin.getConfig().getString("MoneyName")));
 						inven.setItemMeta(meta);
 					}
 				}
