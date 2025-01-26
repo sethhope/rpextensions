@@ -10,7 +10,7 @@ UseThirst: true
 
 #Time in ticks between thirst depletion
 #There are 20 thirst points, damage occurs at 0. 
-#60 ticks = 1 second
+#20 ticks = 1 second
 ThirstTime: 1200
 
 #Enable sleep requirements
@@ -18,28 +18,88 @@ UseSleep: true
 
 #Time in ticks between sleep depletion
 #There are 20 sleep points, death occurs at 0.
-#60 ticks = 1 second
-SleepTime: 9600
+#20 ticks = 1 second
+SleepTime: 2400
 
 #Enable sitting on blocks
 UseChairs: true
 
 #Specify which block will the considered a chair
-ChairID: "OAK_STAIRS"
+ChairID:
+    - OAK_STAIRS
+    - BIRCH_STAIRS
+    - DARK_OAK_STAIRS
+    - SPRUCE_STAIRS
+
+#Enable the stat monitor item
+UseStatMonitor: true
+
+#Specify which item will be used as a stat monitor
+StatMonitorID: "PAPER"
+
+#////////////MESSAGES////////////////#
+
+#Define the message that is sent when a player does /stats
+# '&' is used for formatting (colors, bold, etc)
+# Keywords can be used when surrounded by curly brackets "{}"
+# Keywords are as follows:
+    #{Player_Name} = Player's display name
+    #{Thirst} = Player's thirst level
+    #{Sleepiness} = Player's Sleepiness level
+    #{Money} = Player's bank balance
+    #{Unit} = MoneyUnit as defined below
+    #{UUID} = Player's UUID
+#
+StatMessage:
+    - "&4----------STATS----------"
+    - "&fThirst: &9{Thirst}"
+    - "&fSleepiness: &9{Sleepiness}"
+    - "&fMoney: &9{Money}{Unit}"
+    - "&4-------------------------"
+
+#Defines the message that is sent when a moderator uses the /checkstats [player] command.
+# Uses the same formatting and keywords as StatMessage.
+CheckStatMessage:
+    - "&4------TARGET--STATS------"
+    - "&fUUID: &9{UUID}"
+    - "&fName: &9{Player_Name}"
+    - "&fThirst: &9{Thirst}"
+    - "&fSleepiness: &9{Sleepiness}"
+    - "&fMoney: &9{Money}{Unit}"
+    - "&4-------------------------"
+
+#Defines the message displayed when a payday occurs.
+# This message requres UseInterest in the BANKING section to be true
+# "&" is used for formatting (colors, bold, etc)
+# All the keywords in the above messages apply.
+# Additionally, there are special keywords for this message.
+# They are as follows:
+    #{Previous} = The player's balance before interest is added
+    #{Added} = The amount of interest added to the player's balance
+    #{Rate} = The current interest rate
+PaydayMessage:
+    - "&4============PAYDAY============"
+    - "&3Original Amount: {Previous}{Unit} Interest Rate: {Rate}"
+    - "&3Interest Gained: {Added}{Unit}"
+    - "&3Final Balance: {Money}{Unit}"
+    - "&4=============================="
 
 
 #//////////////BANKING///////////////#
 #Which Item ID should be used as money
 MoneyID: "GOLD_NUGGET"
 
-#Money suffix
+#Money unit symbol
 MoneyUnit: 'g'
+
+#Should the money unit go before the value?
+PrefixUnit: false
 
 #Enable item renaming for money items
 RenameMoney: true
 
 #What money will be called in the inventory
-MoneyName: '§cCoin'
+MoneyName: '&cCoin'
 
 #Enable gradual interest
 UseInterest: true

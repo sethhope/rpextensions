@@ -1,6 +1,6 @@
 name: 'RP-Extensions'
 main: 'com.jcamtech.rpextensions.MainClass'
-version: '0.0.12'
+version: '0.0.19'
 api-version: '1.20'
 softdepend: [Vault, Essentials]
 commands:
@@ -49,6 +49,16 @@ commands:
         useage: /convertEcon
         permission: rpext.convertEcon
         permission-message: You don't have rpext.convertEcon in your permissions!
+    statMonitor:
+        description: Gets a stat monitor item
+        useage: /statmonitor
+        permission: rpext.statmonitor
+        permission-message: You don't have rpext.statmonitor in your permissions!
+    setstats:
+        description: Sets the stats of a player
+        useage: /setstats [player] [thirst] [sleep]
+        permission: rpext.setstats
+        permission-message: You don't have rpext.setstats in your permissions!
 permissions:
     rpext.*:
         description: Gives access to all rpext commands
@@ -64,6 +74,8 @@ permissions:
             rpext.gset: true
             rpext.ggive: true
             rpext.convertEcon: true
+            rpext.statmonitor: true
+            rpext.setstats: true
     rpext.read:
         description: Allows you to read stats
         default: true
@@ -102,4 +114,10 @@ permissions:
         default: false
     rpext.convertEcon:
         description: Allows player to convert the economy to vault
+        default: false
+    rpext.statmonitor:
+        description: Allows the player to spawn a stat monitor item
+        default: false
+    rpext.setstats:
+        description: Allows the player to set the stats of another player
         default: false

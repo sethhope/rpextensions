@@ -44,7 +44,6 @@ public class check implements CommandExecutor{
 				}
 			} else 
 			{
-				Player player = (Player) sender;
 				Player target = (Bukkit.getServer().getPlayer(args[0]));
 				if(target == null)
 				{
@@ -54,7 +53,7 @@ public class check implements CommandExecutor{
 				Object[] statMessage = config.getList("CheckStatMessage").toArray();
 				for(Object line : statMessage)
 				{
-					String msg = plugin.parseMessage(player, line.toString());
+					String msg = plugin.parseMessage(target, line.toString());
 					sender.sendMessage(msg);
 				}
 			}
